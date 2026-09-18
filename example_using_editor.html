@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Application - Image Editor Integration Demo</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        input,
+        select {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        /* Modal for Iframe mode */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-container {
+            width: 95vw;
+            max-width: 1200px;
+            height: 85vh;
+            background: #121418;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-bar {
+            height: 40px;
+            background: #1e222b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close-btn:hover {
+            color: #fff;
+        }
+
+        iframe {
+            width: 100%;
+            flex: 1;
+            border: none;
+        }
+
+        /* Gallery of received images */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .result-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .result-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .result-meta {
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .log-box {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            height: 120px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Host Application - Image Editor Integration</h1>
+            <p>Demonstration of Popup Mode, Iframe Modal Mode, Bi-directional postMessage & window.edited_upload
+                callbacks.</p>
+        </header>
+
+        <div class="card">
+            <div class="card-title">Integration Parameters</div>
+            <div class="config-grid">
+                <div class="form-group">
+                    <label>Context Token (?token=)</label>
+                    <input type="text" id="cfgToken" value="session_token_xyz999">
+                </div>
+                <div class="form-group">
+                    <label>Default Output Format</label>
+                    <select id="cfgFormat">
+                        <option value="webp">WebP</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="png">PNG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Max Dimension Limit</label>
+                    <select id="cfgMaxSize">
+                        <option value="0">Original (No limit)</option>
+                        <option value="1080">1080px</option>
+                        <option value="1920">1920px</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quality (0.1 to 1.0)</label>
+                    <input type="number" id="cfgQuality" min="0.1" max="1.0" step="0.05" value="0.85">
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" id="btnOpenPopup">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+                    </svg>
+                    Open in Popup Window
+                </button>
+                <button class="btn btn-secondary" id="btnOpenModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+                    </svg>
+                    Open in Iframe Modal
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Live Message & Callback Log</div>
+            <div class="log-box" id="logBox">Host ready. Waiting for events...</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Received Uploaded Images (<span id="resultsCount">0</span>)</div>
+            <div class="results-grid" id="resultsGrid">
+                <p id="noResultsText" style="color: var(--text-muted); font-size: 13px;">No images uploaded yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Iframe Modal Backdrop -->
+    <div class="modal-backdrop" id="modalBackdrop">
+        <div class="modal-container">
+            <div class="modal-bar">
+                <span>Image Editor Modal</span>
+                <button class="modal-close-btn" id="btnCloseModal">&times;</button>
+            </div>
+            <iframe id="editorIframe" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        let popupWindow = null;
+        let receivedItems = [];
+
+        function log(msg) {
+            const box = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString();
+            box.innerHTML += `<div>[${time}] ${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function buildEditorUrl() {
+            const token = encodeURIComponent(document.getElementById('cfgToken').value.trim());
+            const format = encodeURIComponent(document.getElementById('cfgFormat').value);
+            const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
+            const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
+            return `editor.html?token=${token}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+        }
+
+        // --- 1. Popup Window Invocation ---
+        document.getElementById('btnOpenPopup').addEventListener('click', () => {
+            const url = buildEditorUrl();
+            log(`Opening popup window: ${url}`);
+            popupWindow = window.open(url, 'ImageEditorHostPopup', 'width=1150,height=850,resizable=yes,scrollbars=no');
+        });
+
+        // --- 2. Iframe Modal Invocation ---
+        const modal = document.getElementById('modalBackdrop');
+        const iframe = document.getElementById('editorIframe');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+
+        document.getElementById('btnOpenModal').addEventListener('click', () => {
+            const url = buildEditorUrl();
+            log(`Loading iframe modal: ${url}`);
+            iframe.src = url;
+            modal.classList.add('active');
+        });
+
+        btnCloseModal.addEventListener('click', () => {
+            modal.classList.remove('active');
+            iframe.src = 'about:blank';
+            log('Iframe modal closed by user.');
+        });
+
+        // --- 3. Direct Callback Fallback: window.edited_upload(payload) ---
+        window.edited_upload = function (payload) {
+            log(`Received direct callback edited_upload() for: ${payload.name} (${payload.width}x${payload.height}, ${formatBytes(payload.fileSize)})`);
+            handleReceivedPayload(payload);
+        };
+
+        // --- 4. Bi-directional postMessage Handlers ---
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data || typeof data !== 'object') return;
+
+            if (data.type === 'EDITOR_READY') {
+                log(`Handshake received: EDITOR_READY (token: ${data.token})`);
+            } else if (data.type === 'IMAGE_UPLOAD_ITEM') {
+                const payload = data.payload;
+                log(`postMessage IMAGE_UPLOAD_ITEM: ${payload.name} (${payload.width}x${payload.height}, ${formatBytes(payload.fileSize)})`);
+                handleReceivedPayload(payload);
+
+                // Send mock progress and completion status feedback back to editor
+                const sourceWin = event.source;
+                if (sourceWin) {
+                    setTimeout(() => {
+                        sourceWin.postMessage({ action: 'UPLOAD_STATUS', id: payload.id, status: 'DONE', progress: 100 }, '*');
+                    }, 300);
+                }
+            } else if (data.type === 'EDITOR_DONE') {
+                log(`Batch Completed: EDITOR_DONE received (token: ${data.token})`);
+                if (modal.classList.contains('active')) {
+                    setTimeout(() => {
+                        modal.classList.remove('active');
+                        iframe.src = 'about:blank';
+                    }, 500);
+                }
+            } else if (data.type === 'EDITOR_CLOSE') {
+                log('EDITOR_CLOSE event received from iframe.');
+                modal.classList.remove('active');
+                iframe.src = 'about:blank';
+            }
+        });
+
+        function handleReceivedPayload(payload) {
+            // Prevent duplicate rendering if both postMessage and callback fired
+            if (receivedItems.some(item => item.id === payload.id)) return;
+            receivedItems.push(payload);
+
+            document.getElementById('resultsCount').textContent = receivedItems.length;
+            const noRes = document.getElementById('noResultsText');
+            if (noRes) noRes.style.display = 'none';
+
+            const grid = document.getElementById('resultsGrid');
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            const img = document.createElement('img');
+            img.className = 'result-img';
+            img.src = payload.dataUrl;
+            img.alt = payload.name;
+            card.appendChild(img);
+
+            const info = document.createElement('div');
+            info.className = 'result-info';
+            info.innerHTML = `
+        <div class="result-name" title="${payload.name}">${payload.name}</div>
+        <div class="result-meta">${payload.width} x ${payload.height} px</div>
+        <div class="result-meta">${payload.mimeType} | ${formatBytes(payload.fileSize)}</div>
+        <div class="result-meta" style="color: #38bdf8;">Token: ${payload.token || 'None'}</div>
+      `;
+            card.appendChild(info);
+            grid.appendChild(card);
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+
+</html>
