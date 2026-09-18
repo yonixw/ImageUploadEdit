@@ -1,0 +1,17 @@
+no token is passed as i see 
+shape star - only once 
+blur and pixelate box-selection doesn't work 
+    also blur selection hangs for a lot... - spin icon?
+no apply&upload per image in list 
+quality has no real preview and no apply...
+draw arrow has the end few pixels back
+max dimension - more option with ratio in name
+    (from avatar, square thumb, etc.)
+Rotate
+    In text - doesnt show - 0 to 360
+    Image rotate also should have free degree (with black/white bg for new bg)
+Apply & Done only in list 
+    The current button should just say (Apply All?) and move to list tab
+Another tool, to center, move the image.. good also after crop.
+    Auto center do happen sometimes, like in "undo"
+    Zoom should still be cross tool option
