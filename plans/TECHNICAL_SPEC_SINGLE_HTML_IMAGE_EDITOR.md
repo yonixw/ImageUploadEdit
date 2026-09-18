@@ -57,29 +57,46 @@ type HostInboundMessage =
 
 ---
 
-## 3. UI/UX Layout Structure
+## 3. UI/UX Layout Structure (Strict Single-Column Vertical Layout)
 
-A responsive, touch-friendly UI adapting to both desktop split-panes and mobile vertical layouts:
+To ensure universal compatibility across mobile smartphones, tablets, and desktop popups/iframes, the application enforces a strict **single-column vertical stacked layout**:
 
 ```
 +-------------------------------------------------------------------------+
-| [Header] Logo/Title | Token / Session Info | [Upload All & Done] [Close] |
-+------------------+----------------------------------+-------------------+
-| [Gallery Drawer] | [Main Viewport Canvas]           | [Primary Toolbar] |
-| - Thumb 1 [Del]  |                                  | - Crop            |
-| - Thumb 2 (Active| - Interactive Canvas Layer       | - Rotate/Flip     |
-| - Thumb 3 [Prog] | - Pan & Pinch/Wheel Zoom overlay | - Filters         |
-|                  | - Marquee / Crop HUD             | - Brush & Shapes  |
-| [+ Add Files]    | - Text & Stamp Transform HUD     | - Censor / Blur   |
-| [+ Camera]       |                                  | - Text / Emoji    |
-|                  |                                  | - Quality / Export|
-|                  |----------------------------------| - Undo / Redo     |
-|                  | [Secondary Contextual Toolbar]   |                   |
-|                  | (Dynamic controls for active op) |                   |
-+------------------+----------------------------------+-------------------+
-| [Status Bar] Zoom: 100% | Dimensions: 1920x1080 | Est Size: 412 KB      |
+| [Header / Mode Tabs]  [Upload] | [List / Gallery] | [Edit] | [Upload All & Done] |
++-------------------------------------------------------------------------+
+| [<] [Toolbar 1: Primary Tools - Crop | Rotate | Filters | Brush | Text...] [>] |
++-------------------------------------------------------------------------+
+| [<] [Toolbar 2: Contextual Sub-Tools (Ratios / Colors / Size / Quality)] [>]  |
++-------------------------------------------------------------------------+
+|                                                                         |
+|                                                                         |
+|                       [Main Viewport Canvas]                            |
+|                     (Occupies 60% - 80% Viewport Height)                |
+|                                                                         |
+|                                                                         |
++-------------------------------------------------------------------------+
+| [<]                          100%, 1920x1080, 412KB                 [>] |
 +-------------------------------------------------------------------------+
 ```
+
+### 3.1 Vertical Column Sections
+1. **Header & View Navigation Tabs (Top):**
+   * **Upload Tab:** Ingestion screen (File Picker, Folder Picker, Camera Launcher, Drag & Drop area).
+   * **List / Gallery Tab:** Thumbnail grid / queue view showing all loaded images with statuses and delete buttons.
+   * **Edit Tab:** Active image editing workspace.
+   * **Action Button:** `Upload All & Done` (and Close button if running in modal/popup).
+2. **Toolbar 1 (Primary Tools):**
+   * Single-row horizontal scrolling bar with primary tool buttons (Crop, Rotate/Flip, Filters, Brush, Shapes, Censor/Blur, Text/Emoji, Quality/Export, Undo, Redo).
+   * **Scroll Overflow Indicators:** Left (`<`) and right (`>`) arrow badges automatically appear when the toolbar has overflow scroll content in that direction; clicking an arrow smoothly scrolls the toolbar.
+3. **Toolbar 2 (Sub-Tools / Contextual Options):**
+   * Single-row horizontal scrolling bar dynamically populated with active tool settings (e.g., crop aspect ratios, avatar mask toggle, brush size slider, color picker trigger, font options, export quality slider).
+   * **Scroll Overflow Indicators:** Left (`<`) and right (`>`) arrow badges matching Toolbar 1.
+4. **Main Canvas Viewport (60% to 80% of Viewport Height):**
+   * Flexibly sized interactive workspace accommodating canvas pan/zoom, handles, crop box, and overlays without vertical page scrolling during gestures.
+5. **Compact Status Bar (Bottom):**
+   * Minimalist, label-free data readout formatted strictly as: `100%, 1920x1080, 412KB` (Zoom %, Canvas Dimensions, Estimated Output Size).
+   * Horizontal scrollable with left/right overflow arrows if rendered in narrow mobile viewports.
 
 ---
 
@@ -236,7 +253,10 @@ const ImageEditor = {
 
 ## 6. Implementation Checklist & Acceptance Criteria
 
-- [ ] **Cross-Browser & Responsive:** Tested and functional on desktop & mobile screen breakpoints (touch interactions verified).
+- [ ] **Strict Single-Column Vertical Layout:** Full mobile/desktop responsiveness with 60–80% canvas height.
+- [ ] **Horizontal Toolbars with Scroll Indicators:** Toolbars 1 & 2 and status bar show left/right arrow indicators on scroll overflow.
+- [ ] **Tab Navigation:** Seamless switching between Upload, List/Gallery, and Edit modes.
+- [ ] **Compact Status Bar:** Strict label-free format: `100%, 1920x1080, 412KB`.
 - [ ] **Zero Dependencies:** Single `.html` file with embedded `<style>` and `<script>`, zero CDN dependencies.
 - [ ] **Drag & Drop & Clipboard Ingestion:** Supports drag-and-drop for files and folders (with visual drop target), plus clipboard paste.
 - [ ] **Folder Upload & Count Alert:** Prompts user when selecting or dropping folders with > 10 images.
