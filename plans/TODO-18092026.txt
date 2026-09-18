@@ -1,0 +1,53 @@
+This should be a pluggable way for any website to let user upload image, with simple
+manipulation to make sure it the way they want to.
+Think about popup or new tab that any website can call knowing it will get image in return.
+
+Need to work on html cross platform (chrome, firefox, safari, mobile also)
+
+Image:
+1) Upload to client side (to memory)
+    upload from file
+    upload folder (count warning if > 10 files)
+        support only formats that sure to work everywhere
+            unless you have 1 js file to include to convert them (webp etc)
+            svg also, only if you can rasterize it in browser (no backend)
+    upload from camera
+        show camera list (specially in mobile for front,back custom zooms etc.)
+        
+2) Edit each from "gallery" list of thumb preview
+    Toolbar with actions, that affect current tool
+        Secondary toolbar if needed
+    Crop
+        common ratios
+        Ratio + helpful mask 
+            Like circle mask inside rectangle 1:1 crop, for social networks profiles
+    Rotate
+        Common: Rotate (1-3)x90deg, flip V/H
+    Color Palate
+        Greyscale,BW, Vintage, other common filters...
+    Brush
+        Color,size
+        Simple shapes - Circle, Start, Rectangle, Square etc.
+    Blur or Pixelate or Smudge etc.
+        The point is to keep color, but hide sensitive info 
+    Quality -> Show file size 
+        Let me make it more friendly for slow net
+    Let zoom in&out to verify and inspect
+    Add text (support emoji)
+        position,scale,color,rotate,apply
+    Add circle, rectangle
+        Color, Fill mode (color, none etc.), Border pattern
+    Undo & Redo up to X (5?) actions 
+
+Note: All colors mentioned above come from a color chooser, that will:
+    * show common colors 
+    * show last used colors (using localstore)    
+    * support transparency 
+    
+3) Apply & upload to server
+    Per Image (and then remove from list of pending)
+    "Upload all & Done" -> Show load circle on thumb while uploading
+        Whether immediate or wait, should be decided based on the interface
+            like, should i call opener.upload(image,id,...) and then opener.check(id) = {NONE, DONE, PROGRESSS, ERROR}
+    Call window.edited_upload(image, index, token)...
+        (or opener.edited_upload for both new tab, if Im in iframe or popup etc)
