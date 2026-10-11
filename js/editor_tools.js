@@ -1419,6 +1419,68 @@ window.EditorTools = (function () {
     });
     container.appendChild(bgPlateBtn);
 
+    // Rotation Controls
+    const rotDivider = document.createElement("div");
+    rotDivider.className = "tool-divider";
+    container.appendChild(rotDivider);
+
+    const rotLabel = document.createElement("span");
+    rotLabel.id = "textRotLabel";
+    rotLabel.className = "tool-label";
+    rotLabel.textContent = `Rotate:`;
+    container.appendChild(rotLabel);
+
+    const rotSlider = document.createElement("input");
+    rotSlider.type = "range";
+    rotSlider.id = "textRotSlider";
+    rotSlider.min = "0";
+    rotSlider.max = "360";
+    rotSlider.value = textState.rotation;
+    rotSlider.className = "tool-input-slider";
+    rotSlider.style.width = "90px";
+    rotSlider.title = "Rotate Text (0° to 360°)";
+    rotSlider.addEventListener("input", (e) => {
+      textState.rotation = parseInt(e.target.value, 10);
+      if (window.EditorCanvas) window.EditorCanvas.render();
+    });
+    container.appendChild(rotSlider);
+
+    const rotMinusBtn = document.createElement("button");
+    rotMinusBtn.className = "tool-btn";
+    rotMinusBtn.title = "Rotate -45°";
+    rotMinusBtn.textContent = "⟲ -45°";
+    rotMinusBtn.style.fontSize = "11px";
+    rotMinusBtn.addEventListener("click", () => {
+      textState.rotation = (((textState.rotation - 45) % 360) + 360) % 360;
+      rotSlider.value = textState.rotation;
+      if (window.EditorCanvas) window.EditorCanvas.render();
+    });
+    container.appendChild(rotMinusBtn);
+
+    const rotPlusBtn = document.createElement("button");
+    rotPlusBtn.className = "tool-btn";
+    rotPlusBtn.title = "Rotate +45°";
+    rotPlusBtn.textContent = "⟳ +45°";
+    rotPlusBtn.style.fontSize = "11px";
+    rotPlusBtn.addEventListener("click", () => {
+      textState.rotation = (textState.rotation + 45) % 360;
+      rotSlider.value = textState.rotation;
+      if (window.EditorCanvas) window.EditorCanvas.render();
+    });
+    container.appendChild(rotPlusBtn);
+
+    const rotResetBtn = document.createElement("button");
+    rotResetBtn.className = "tool-btn";
+    rotResetBtn.title = "Reset Rotation to 0°";
+    rotResetBtn.textContent = "0°";
+    rotResetBtn.style.fontSize = "11px";
+    rotResetBtn.addEventListener("click", () => {
+      textState.rotation = 0;
+      rotSlider.value = 0;
+      if (window.EditorCanvas) window.EditorCanvas.render();
+    });
+    container.appendChild(rotResetBtn);
+
     const divider = document.createElement("div");
     divider.className = "tool-divider";
     container.appendChild(divider);
@@ -1438,6 +1500,7 @@ window.EditorTools = (function () {
     if (item && item.currentCanvas) {
       textState.x = Math.round(item.currentCanvas.width / 2);
       textState.y = Math.round(item.currentCanvas.height / 2);
+      textState.rotation = 0;
     }
   }
 
@@ -1795,16 +1858,21 @@ window.EditorTools = (function () {
     ctx.lineWidth = 1;
     ctx.strokeRect(-tw / 2 - 12, -th / 2 - 8, tw + 24, th + 16);
 
-    // Rotation Handle (top)
+    // Rotation Handle (top stem & circle)
     ctx.setLineDash([]);
-    ctx.fillStyle = "#10b981";
-    ctx.beginPath();
-    ctx.arc(0, -th / 2 - 22, 6, 0, Math.PI * 2);
-    ctx.fill();
-
+    ctx.strokeStyle = "#3b82f6";
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(0, -th / 2 - 8);
-    ctx.lineTo(0, -th / 2 - 16);
+    ctx.lineTo(0, -th / 2 - 24);
+    ctx.stroke();
+
+    ctx.fillStyle = "#10b981";
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(0, -th / 2 - 24, 7, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
 
     ctx.restore();
@@ -2235,20 +2303,70 @@ window.EditorTools = (function () {
   }
 
   function handleTextMouseDown(pos) {
-    // Check rotation handle or drag text
-    const dist = Math.hypot(pos.x - textState.x, pos.y - textState.y);
-    if (dist < 80) {
+    const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
+    if (!item || !item.currentCanvas || !textState.text) return false;
+
+    const rad = (textState.rotation * Math.PI) / 180;
+    const dx = pos.x - textState.x;
+    const dy = pos.y - textState.y;
+
+    // Transform click to local text coordinate space
+    const localX = dx * Math.cos(-rad) - dy * Math.sin(-rad);
+    const localY = dx * Math.sin(-rad) + dy * Math.cos(-rad);
+
+    const zoom = window.EditorCanvas ? window.EditorCanvas.zoom || 1 : 1;
+    const halfH = textState.size / 2;
+    const handleY = -halfH - 24 / zoom;
+
+    // 1. Check if clicking on the rotation handle at (0, handleY)
+    const distToHandle = Math.hypot(localX, localY - handleY);
+    if (distToHandle <= 20 / zoom) {
+      textState.isRotating = true;
+      return true;
+    }
+
+    // 2. Check if clicking within text bounding box for dragging
+    const approxHalfW = textState.text.length * textState.size * 0.3 + 20;
+    if (
+      Math.abs(localX) <= approxHalfW + 16 &&
+      Math.abs(localY) <= halfH + 16
+    ) {
       textState.isDragging = true;
       textState.dragOffset = { x: pos.x - textState.x, y: pos.y - textState.y };
       return true;
     }
+
+    // 3. Fallback proximity click
+    if (Math.hypot(dx, dy) <= Math.max(50, approxHalfW)) {
+      textState.isDragging = true;
+      textState.dragOffset = { x: dx, y: dy };
+      return true;
+    }
+
     return false;
   }
 
   function handleTextMouseMove(pos) {
+    if (textState.isRotating) {
+      const dx = pos.x - textState.x;
+      const dy = pos.y - textState.y;
+      const angleRad = Math.atan2(dy, dx);
+      // Handle is located at -90 degrees (top vertical axis):
+      let deg = Math.round((angleRad * 180) / Math.PI + 90);
+      deg = ((deg % 360) + 360) % 360;
+      textState.rotation = deg;
+
+      const rotSlider = document.getElementById("textRotSlider");
+      if (rotSlider) rotSlider.value = deg;
+
+      if (window.EditorCanvas) window.EditorCanvas.render();
+      return true;
+    }
+
     if (textState.isDragging) {
       textState.x = pos.x - textState.dragOffset.x;
       textState.y = pos.y - textState.dragOffset.y;
+      if (window.EditorCanvas) window.EditorCanvas.render();
       return true;
     }
     return false;
