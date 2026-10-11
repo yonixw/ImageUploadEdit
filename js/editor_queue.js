@@ -45,7 +45,7 @@ window.EditorQueue = (function () {
     const canvas = document.createElement("canvas");
     canvas.width = sourceCanvas.width;
     canvas.height = sourceCanvas.height;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
     ctx.drawImage(sourceCanvas, 0, 0);
     return canvas;
   }
@@ -82,7 +82,7 @@ window.EditorQueue = (function () {
     const originalCanvas = cloneCanvas(sourceCanvas);
 
     // Initial history snapshot
-    const ctx = initialCanvas.getContext("2d");
+    const ctx = initialCanvas.getContext("2d", { willReadFrequently: true });
     const initialSnapshot = ctx.getImageData(
       0,
       0,

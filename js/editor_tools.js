@@ -302,7 +302,9 @@ window.EditorTools = (function () {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (!item || !item.currentCanvas) return;
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
     const snapshot = ctx.getImageData(
       0,
       0,
@@ -343,7 +345,9 @@ window.EditorTools = (function () {
       item.currentCanvas.height = snapshot.height;
     }
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
     ctx.putImageData(snapshot, 0, 0);
 
     updateHistoryButtons();
@@ -370,7 +374,9 @@ window.EditorTools = (function () {
       item.currentCanvas.height = snapshot.height;
     }
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
     ctx.putImageData(snapshot, 0, 0);
 
     updateHistoryButtons();
@@ -602,7 +608,7 @@ window.EditorTools = (function () {
     const croppedCanvas = document.createElement("canvas");
     croppedCanvas.width = rw;
     croppedCanvas.height = rh;
-    const ctx = croppedCanvas.getContext("2d");
+    const ctx = croppedCanvas.getContext("2d", { willReadFrequently: true });
 
     if (cropState.isAvatarMask) {
       ctx.save();
@@ -750,16 +756,19 @@ window.EditorTools = (function () {
     const rotated = document.createElement("canvas");
     rotated.width = newW;
     rotated.height = newH;
-    const ctx = rotated.getContext("2d");
+    const ctx = rotated.getContext("2d", { willReadFrequently: true });
 
     if (bgColor && bgColor !== "transparent") {
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, newW, newH);
     }
 
+    ctx.save();
     ctx.translate(newW / 2, newH / 2);
     ctx.rotate(rad);
     ctx.drawImage(src, -src.width / 2, -src.height / 2);
+    ctx.restore();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
 
     item.currentCanvas = rotated;
     pushHistorySnapshot();
@@ -774,13 +783,14 @@ window.EditorTools = (function () {
     const flipped = document.createElement("canvas");
     flipped.width = src.width;
     flipped.height = src.height;
-    const ctx = flipped.getContext("2d");
+    const ctx = flipped.getContext("2d", { willReadFrequently: true });
 
     ctx.save();
     ctx.translate(horizontal ? src.width : 0, vertical ? src.height : 0);
     ctx.scale(horizontal ? -1 : 1, vertical ? -1 : 1);
     ctx.drawImage(src, 0, 0);
     ctx.restore();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
 
     item.currentCanvas = flipped;
     pushHistorySnapshot();
@@ -899,7 +909,9 @@ window.EditorTools = (function () {
     initFilterState();
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (item && item.historyStack[item.historyIndex]) {
-      const ctx = item.currentCanvas.getContext("2d");
+      const ctx = item.currentCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
       ctx.putImageData(item.historyStack[item.historyIndex], 0, 0);
     }
     populateSubToolbar();
@@ -1068,7 +1080,9 @@ window.EditorTools = (function () {
 
     if (rw <= 2 || rh <= 2) return;
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
 
     if (type === "pixelate") {
       const imgData = ctx.getImageData(rx, ry, rw, rh);
@@ -1183,7 +1197,7 @@ window.EditorTools = (function () {
     const off = document.createElement("canvas");
     off.width = bw;
     off.height = bh;
-    const offCtx = off.getContext("2d");
+    const offCtx = off.getContext("2d", { willReadFrequently: true });
     offCtx.drawImage(item.currentCanvas, bx, by, bw, bh, 0, 0, bw, bh);
 
     if (type === "pixelate") {
@@ -1241,7 +1255,10 @@ window.EditorTools = (function () {
       offCtx.restore();
     }
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.save();
     ctx.beginPath();
     if (isIn) {
@@ -1428,7 +1445,10 @@ window.EditorTools = (function () {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (!item || !item.currentCanvas || !textState.text) return;
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.save();
     ctx.translate(textState.x, textState.y);
     ctx.rotate((textState.rotation * Math.PI) / 180);
@@ -2144,7 +2164,10 @@ window.EditorTools = (function () {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (!item || !item.currentCanvas || brushState.points.length === 0) return;
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.save();
     ctx.strokeStyle = currentColor;
     ctx.fillStyle = currentColor;
@@ -2254,7 +2277,9 @@ window.EditorTools = (function () {
     )
       return;
 
-    const ctx = item.currentCanvas.getContext("2d");
+    const ctx = item.currentCanvas.getContext("2d", {
+      willReadFrequently: true,
+    });
     const p1 = shapeState.startPos;
     const p2 = shapeState.currentPos;
 
@@ -2265,6 +2290,7 @@ window.EditorTools = (function () {
 
     if (sw < 2 || sh < 2) return;
 
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.save();
     ctx.strokeStyle = currentColor;
     ctx.lineWidth = shapeState.strokeWidth;
