@@ -26,7 +26,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 
 ## How to Embed the Editor in Any Web Page
 
-You only need `editor.html` (along with its `js/` and `theme/` folders). You can integrate it via **Iframe Modal**, **Popup Window**, or **New Tab**.
+You only need `editor.html` (along with its `js/` and `theme/` folders). You can integrate it via **Iframe Modal**, **Popup Window**, or **New Tab**. You can also use the hosted version at https://yonixw.github.io/ImageUploadEdit/editor.html
 
 ### 1. Iframe Modal Embedding
 
