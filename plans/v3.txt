@@ -1,6 +1,10 @@
-* theme still not working... maybe have shared stuff with variable that get set in js above it based on url param? 
-   and in {theme}.css there will be check if var=={theme} and only then overwrite stuff for that theme - colors and properties
-* token still not passed. I see "Token: None" in the example page... I mean not getting back with image "upload this/all"
-* move lines / arrow / star from brush to shapes (brush is just the "freehand" brush)
+TODO:
+* lines / arrow / star was supposed to move from "brush" to "shapes" but now its gone
+
+2 problems that caused because the inside of iframe js doesn't see the iframe url ??? please fix 
+    * theme still not working... 
+    * token still not passed. I see "Token: None" in the example page...
+    
+DONE:
 * I want another option for Censor: Like freehand area selection, that will either censor all in or out of the shape - so like "Freehand-In" and "Freehand-Out"
 

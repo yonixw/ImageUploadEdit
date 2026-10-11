@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Image Uploader & Editor</title>
     <script>
-        (function () {
-            var params = new URLSearchParams(window.location.search);
-            var theme = (params.get('theme') || 'dark').toLowerCase();
-            if (['dark', 'glass', 'dark-orange'].indexOf(theme) === -1) theme = 'dark';
-            document.write('<link id="themeStylesheet" rel="stylesheet" href="theme/' + theme + '.css">');
-        })();
+        var params = new URLSearchParams(window.location.search);
+        var theme = (params.get('theme') || 'dark').toLowerCase();
+        console.log({ theme });
+        document.documentElement.setAttribute('data-theme', theme);
     </script>
+    <link rel="stylesheet" href="theme/theme.css">
 </head>
 
 <body>

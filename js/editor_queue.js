@@ -94,8 +94,14 @@ window.EditorQueue = (function () {
     const defaultQuality = window.EditorHost?.config?.quality || 0.85;
     const defaultMaxSize = window.EditorHost?.config?.maxSize || 0;
 
+    const currentToken =
+      window.EditorHost && typeof window.EditorHost.getToken === "function"
+        ? window.EditorHost.getToken()
+        : new URLSearchParams(window.location.search).get("token") || "";
+
     const item = {
       id: generateUUID(),
+      token: currentToken,
       name: name || "untitled.png",
       mimeType: mimeType,
       originalCanvas: originalCanvas,

@@ -109,12 +109,20 @@ window.EditorHost = (function () {
     }
   }
 
+  function getToken() {
+    return (
+      config.token ||
+      new URLSearchParams(window.location.search).get("token") ||
+      ""
+    );
+  }
+
   /**
    * Dispatch an individual edited image item payload to host or download fallback
    * @param {Object} payload EditedImagePayload
    */
   async function sendImageItem(payload) {
-    payload.token = config.token;
+    payload.token = getToken();
     let delivered = false;
 
     // 1. Check direct JavaScript callbacks
@@ -238,9 +246,9 @@ window.EditorHost = (function () {
     const validThemes = ["dark", "glass", "dark-orange"];
     const theme = validThemes.includes(themeName) ? themeName : "dark";
     config.theme = theme;
-    const link = document.getElementById("themeStylesheet");
-    if (link) {
-      link.href = `theme/${theme}.css`;
+    document.documentElement.setAttribute("data-theme", theme);
+    if (document.body) {
+      document.body.setAttribute("data-theme", theme);
     }
   }
 
@@ -250,6 +258,7 @@ window.EditorHost = (function () {
     isIframe,
     isEmbedded,
     init,
+    getToken,
     setTheme,
     sendHandshake,
     sendImageItem,

@@ -33,21 +33,18 @@ window.EditorTools = (function () {
 
   const censorState = {
     type: "pixelate", // 'pixelate' | 'blur'
-    mode: "box", // 'box' | 'brush'
+    mode: "box", // 'box' | 'brush' | 'freehand-in' | 'freehand-out'
     radius: 16,
     brushPoints: [],
+    freehandPoints: [],
     boxRect: null,
     isInteracting: false,
   };
 
   const brushState = {
-    type: "freehand", // 'freehand' | 'line' | 'arrow' | 'star' | 'circle' | 'rect'
     size: 8,
-    fillMode: "stroke", // 'stroke' | 'fill'
     points: [],
     isDrawing: false,
-    startPoint: null,
-    currentPoint: null,
   };
 
   const textState = {
@@ -1018,6 +1015,8 @@ window.EditorTools = (function () {
     const modes = [
       { id: "box", label: "Box Selection" },
       { id: "brush", label: "Brush" },
+      { id: "freehand-in", label: "Freehand-In" },
+      { id: "freehand-out", label: "Freehand-Out" },
     ];
 
     modes.forEach((m) => {
@@ -1158,30 +1157,118 @@ window.EditorTools = (function () {
     pushHistorySnapshot();
   }
 
-  // E. Brush Sub Toolbar
+  function applyCensorPolygon(points, type, radius, isIn) {
+    const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
+    if (!item || !item.currentCanvas || points.length < 3) return;
+
+    const w = item.currentCanvas.width;
+    const h = item.currentCanvas.height;
+
+    let minX = w,
+      minY = h,
+      maxX = 0,
+      maxY = 0;
+    for (const p of points) {
+      minX = Math.min(minX, p.x);
+      minY = Math.min(minY, p.y);
+      maxX = Math.max(maxX, p.x);
+      maxY = Math.max(maxY, p.y);
+    }
+
+    const bx = isIn ? Math.max(0, Math.floor(minX)) : 0;
+    const by = isIn ? Math.max(0, Math.floor(minY)) : 0;
+    const bw = isIn ? Math.max(2, Math.min(w - bx, Math.ceil(maxX - minX))) : w;
+    const bh = isIn ? Math.max(2, Math.min(h - by, Math.ceil(maxY - minY))) : h;
+
+    const off = document.createElement("canvas");
+    off.width = bw;
+    off.height = bh;
+    const offCtx = off.getContext("2d");
+    offCtx.drawImage(item.currentCanvas, bx, by, bw, bh, 0, 0, bw, bh);
+
+    if (type === "pixelate") {
+      const imgData = offCtx.getImageData(0, 0, bw, bh);
+      const d = imgData.data;
+      const blockSize = Math.max(4, radius);
+      for (let y = 0; y < bh; y += blockSize) {
+        const blockH = Math.min(blockSize, bh - y);
+        for (let x = 0; x < bw; x += blockSize) {
+          const blockW = Math.min(blockSize, bw - x);
+          let r = 0,
+            g = 0,
+            b = 0,
+            a = 0;
+          const count = blockW * blockH;
+          for (let dy = 0; dy < blockH; dy++) {
+            let idx = ((y + dy) * bw + x) * 4;
+            for (let dx = 0; dx < blockW; dx++) {
+              r += d[idx];
+              g += d[idx + 1];
+              b += d[idx + 2];
+              a += d[idx + 3];
+              idx += 4;
+            }
+          }
+          r = Math.round(r / count);
+          g = Math.round(g / count);
+          b = Math.round(b / count);
+          a = Math.round(a / count);
+          for (let dy = 0; dy < blockH; dy++) {
+            let idx = ((y + dy) * bw + x) * 4;
+            for (let dx = 0; dx < blockW; dx++) {
+              d[idx] = r;
+              d[idx + 1] = g;
+              d[idx + 2] = b;
+              d[idx + 3] = a;
+              idx += 4;
+            }
+          }
+        }
+      }
+      offCtx.putImageData(imgData, 0, 0);
+    } else {
+      const bRad = Math.max(2, Math.floor(radius / 2));
+      const blurCopy = document.createElement("canvas");
+      blurCopy.width = bw;
+      blurCopy.height = bh;
+      const bCtx = blurCopy.getContext("2d");
+      bCtx.drawImage(off, 0, 0);
+
+      offCtx.clearRect(0, 0, bw, bh);
+      offCtx.save();
+      offCtx.filter = `blur(${bRad}px)`;
+      offCtx.drawImage(blurCopy, 0, 0);
+      offCtx.restore();
+    }
+
+    const ctx = item.currentCanvas.getContext("2d");
+    ctx.save();
+    ctx.beginPath();
+    if (isIn) {
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(off, bx, by);
+    } else {
+      ctx.rect(0, 0, w, h);
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.closePath();
+      ctx.clip("evenodd");
+      ctx.drawImage(off, 0, 0);
+    }
+    ctx.restore();
+
+    pushHistorySnapshot();
+  }
+
+  // E. Brush Sub Toolbar (Strictly Freehand Drawing)
   function buildBrushSubToolbar(container) {
-    const types = [
-      { id: "freehand", label: "Freehand" },
-      { id: "line", label: "Line" },
-      { id: "arrow", label: "Arrow" },
-      { id: "star", label: "Star" },
-    ];
-
-    types.forEach((t) => {
-      const btn = document.createElement("button");
-      btn.className = `tool-btn ${brushState.type === t.id ? "active" : ""}`;
-      btn.textContent = t.label;
-      btn.addEventListener("click", () => {
-        brushState.type = t.id;
-        populateSubToolbar();
-      });
-      container.appendChild(btn);
-    });
-
-    const divider = document.createElement("div");
-    divider.className = "tool-divider";
-    container.appendChild(divider);
-
     // Color Swatch Trigger
     const colorBtn = document.createElement("button");
     colorBtn.className = "tool-btn";
@@ -1194,6 +1281,10 @@ window.EditorTools = (function () {
     colorBtn.title = "Change Color & Opacity";
     colorBtn.addEventListener("click", () => toggleColorPicker(colorBtn));
     container.appendChild(colorBtn);
+
+    const divider = document.createElement("div");
+    divider.className = "tool-divider";
+    container.appendChild(divider);
 
     // Size Slider
     const sizeSpan = document.createElement("span");
@@ -1802,6 +1893,19 @@ window.EditorTools = (function () {
           censorState.radius,
         );
         censorState.boxRect = null;
+      } else if (
+        (censorState.mode === "freehand-in" ||
+          censorState.mode === "freehand-out") &&
+        censorState.freehandPoints &&
+        censorState.freehandPoints.length > 2
+      ) {
+        applyCensorPolygon(
+          censorState.freehandPoints,
+          censorState.type,
+          censorState.radius,
+          censorState.mode === "freehand-in",
+        );
+        censorState.freehandPoints = [];
       }
       return true;
     } else if (activeTool === "brush" && brushState.isDrawing) {
@@ -1946,6 +2050,11 @@ window.EditorTools = (function () {
     censorState.isInteracting = true;
     if (censorState.mode === "box") {
       censorState.boxRect = { x1: pos.x, y1: pos.y, x2: pos.x, y2: pos.y };
+    } else if (
+      censorState.mode === "freehand-in" ||
+      censorState.mode === "freehand-out"
+    ) {
+      censorState.freehandPoints = [{ x: pos.x, y: pos.y }];
     } else {
       applyCensorToRect(
         {
@@ -1965,6 +2074,13 @@ window.EditorTools = (function () {
     if (censorState.mode === "box" && censorState.boxRect) {
       censorState.boxRect.x2 = pos.x;
       censorState.boxRect.y2 = pos.y;
+    } else if (
+      censorState.mode === "freehand-in" ||
+      censorState.mode === "freehand-out"
+    ) {
+      if (censorState.isInteracting) {
+        censorState.freehandPoints.push({ x: pos.x, y: pos.y });
+      }
     } else if (censorState.mode === "brush") {
       applyCensorToRect(
         {
@@ -1982,14 +2098,11 @@ window.EditorTools = (function () {
 
   function handleBrushMouseDown(pos) {
     brushState.isDrawing = true;
-    brushState.startPoint = { x: pos.x, y: pos.y };
-    brushState.currentPoint = { x: pos.x, y: pos.y };
     brushState.points = [{ x: pos.x, y: pos.y }];
     return true;
   }
 
   function handleBrushMouseMove(pos) {
-    brushState.currentPoint = { x: pos.x, y: pos.y };
     brushState.points.push({ x: pos.x, y: pos.y });
     return true;
   }
@@ -1997,7 +2110,7 @@ window.EditorTools = (function () {
   function commitBrushStroke() {
     brushState.isDrawing = false;
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
-    if (!item || !item.currentCanvas) return;
+    if (!item || !item.currentCanvas || brushState.points.length === 0) return;
 
     const ctx = item.currentCanvas.getContext("2d");
     ctx.save();
@@ -2007,63 +2120,27 @@ window.EditorTools = (function () {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    if (brushState.type === "freehand" && brushState.points.length > 0) {
+    if (brushState.points.length === 1) {
+      ctx.beginPath();
+      ctx.arc(
+        brushState.points[0].x,
+        brushState.points[0].y,
+        brushState.size / 2,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+    } else {
       ctx.beginPath();
       ctx.moveTo(brushState.points[0].x, brushState.points[0].y);
       for (let i = 1; i < brushState.points.length; i++) {
         ctx.lineTo(brushState.points[i].x, brushState.points[i].y);
       }
       ctx.stroke();
-    } else if (
-      brushState.type === "line" &&
-      brushState.startPoint &&
-      brushState.currentPoint
-    ) {
-      ctx.beginPath();
-      ctx.moveTo(brushState.startPoint.x, brushState.startPoint.y);
-      ctx.lineTo(brushState.currentPoint.x, brushState.currentPoint.y);
-      ctx.stroke();
-    } else if (
-      brushState.type === "arrow" &&
-      brushState.startPoint &&
-      brushState.currentPoint
-    ) {
-      drawArrow(
-        ctx,
-        brushState.startPoint.x,
-        brushState.startPoint.y,
-        brushState.currentPoint.x,
-        brushState.currentPoint.y,
-        brushState.size,
-      );
-    } else if (
-      brushState.type === "star" &&
-      brushState.startPoint &&
-      brushState.currentPoint
-    ) {
-      const rad = Math.max(
-        brushState.size * 2,
-        Math.hypot(
-          brushState.currentPoint.x - brushState.startPoint.x,
-          brushState.currentPoint.y - brushState.startPoint.y,
-        ),
-      );
-      drawStar(
-        ctx,
-        brushState.startPoint.x,
-        brushState.startPoint.y,
-        5,
-        rad,
-        rad / 2,
-        true,
-        true,
-      );
     }
 
     ctx.restore();
     brushState.points = [];
-    brushState.startPoint = null;
-    brushState.currentPoint = null;
 
     pushHistorySnapshot();
   }
@@ -2180,6 +2257,13 @@ window.EditorTools = (function () {
       ctx.ellipse(sx + sw / 2, sy + sh / 2, sw / 2, sh / 2, 0, 0, Math.PI * 2);
       if (shapeState.fillStyle !== "none") ctx.fill();
       ctx.stroke();
+    } else if (shapeState.type === "line") {
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    } else if (shapeState.type === "arrow") {
+      drawArrow(ctx, p1.x, p1.y, p2.x, p2.y, shapeState.strokeWidth);
     } else if (shapeState.type === "star") {
       const cx = sx + sw / 2;
       const cy = sy + sh / 2;

@@ -354,10 +354,18 @@ window.EditorExport = (function () {
       const baseName = item.name.replace(/\.[^/.]+$/, "");
       const finalName = `${baseName}-edited.${ext}`;
 
+      const activeToken =
+        item.token ||
+        (window.EditorHost && typeof window.EditorHost.getToken === "function"
+          ? window.EditorHost.getToken()
+          : "") ||
+        new URLSearchParams(window.location.search).get("token") ||
+        "";
+
       const payload = {
         id: item.id,
         index: window.EditorQueue.activeIndex,
-        token: window.EditorHost?.config?.token || "",
+        token: activeToken,
         name: finalName,
         mimeType: mimeType,
         blob: blob,
@@ -433,10 +441,18 @@ window.EditorExport = (function () {
         const baseName = item.name.replace(/\.[^/.]+$/, "");
         const finalName = `${baseName}-edited.${ext}`;
 
+        const activeToken =
+          item.token ||
+          (window.EditorHost && typeof window.EditorHost.getToken === "function"
+            ? window.EditorHost.getToken()
+            : "") ||
+          new URLSearchParams(window.location.search).get("token") ||
+          "";
+
         const payload = {
           id: item.id,
           index: i,
-          token: window.EditorHost?.config?.token || "",
+          token: activeToken,
           name: finalName,
           mimeType: mimeType,
           blob: blob,
