@@ -17,7 +17,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
   - **Brush:** Freehand drawing with adjustable stroke size, color, and opacity.
   - **Shapes:** Rectangle, Rounded Rectangle, Circle/Ellipse, Straight Line, Arrow, and Star with solid/dashed stroke and fill styles.
   - **Text & Emoji:** Drag-and-drop text with rotation, custom font, bold, italic, and badge background plate.
-  - **Export Optimization:** WebP, JPEG, PNG formats with live size estimation and max edge resizing presets.
+  - **Export Optimization:** WebP, JPEG, PNG formats with live size estimation and max resizing dimension presets.
 - **Multi-Theme Support:**
   - **Dark Themes:** `dark` (default), `midnight` (deep navy), `emerald` (forest slate), `dark-orange`, `glass` (glassmorphism).
   - **Light Themes:** `light` (clean modern), `warm-light` (editorial minimal).
@@ -64,7 +64,7 @@ function openEditorPopup(token = 'session_123', theme = 'midnight') {
 
 The editor communicates back to the parent host page via `window.postMessage` and direct `window.edited_upload` fallback.
 
-### Method A: `postMessage` Listener (Recommended)
+### `postMessage` Listener (Recommended)
 
 ```javascript
 window.addEventListener('message', (event) => {
@@ -109,13 +109,6 @@ window.addEventListener('message', (event) => {
 });
 ```
 
-### Method B: Direct Callback Fallback
-
-```javascript
-window.edited_upload = function(payload) {
-  console.log('Received image via direct callback:', payload);
-};
-```
 
 ---
 
