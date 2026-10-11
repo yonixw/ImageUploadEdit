@@ -203,52 +203,6 @@ window.EditorHost = (function () {
     payload.token = getToken();
     let delivered = false;
 
-    // 1. Check direct JavaScript callbacks
-    if (isPopup && window.opener) {
-      if (typeof window.opener.edited_upload === "function") {
-        try {
-          window.opener.edited_upload(payload);
-          delivered = true;
-        } catch (e) {
-          console.warn("Error invoking opener.edited_upload:", e);
-        }
-      } else if (typeof window.opener.upload === "function") {
-        try {
-          window.opener.upload(payload);
-          delivered = true;
-        } catch (e) {
-          console.warn("Error invoking opener.upload:", e);
-        }
-      }
-    }
-
-    if (isIframe && window.parent) {
-      if (typeof window.parent.edited_upload === "function") {
-        try {
-          window.parent.edited_upload(payload);
-          delivered = true;
-        } catch (e) {
-          console.warn("Error invoking parent.edited_upload:", e);
-        }
-      } else if (typeof window.parent.upload === "function") {
-        try {
-          window.parent.upload(payload);
-          delivered = true;
-        } catch (e) {
-          console.warn("Error invoking parent.upload:", e);
-        }
-      }
-    }
-
-    if (typeof window.edited_upload === "function") {
-      try {
-        window.edited_upload(payload);
-        delivered = true;
-      } catch (e) {
-        console.warn("Error invoking window.edited_upload:", e);
-      }
-    }
-
     // 2. Dispatch via postMessage
     const messagePayload = {
       type: "IMAGE_UPLOAD_ITEM",
@@ -270,6 +224,54 @@ window.EditorHost = (function () {
         delivered = true;
       } catch (e) {
         console.warn("Error postMessage to parent:", e);
+      }
+    }
+
+    // 1. Check direct JavaScript callbacks
+    if (isPopup && window.opener) {
+      if (typeof window.opener.edited_upload === "function") {
+        try {
+          window.opener.edited_upload(payload);
+          delivered = true;
+        } catch (e) {
+          console.warn("Error invoking opener.edited_upload:", e);
+        }
+      } else if (typeof window.opener.upload === "function") {
+        try {
+          window.opener.upload(payload);
+          delivered = true;
+        } catch (e) {
+          console.warn("Error invoking opener.upload:", e);
+        }
+      }
+    }
+
+    if (isIframe && window.parent) {
+      try {
+        if (typeof window.parent.edited_upload === "function") {
+          window.parent.edited_upload(payload);
+          delivered = true;
+        }
+      } catch (e) {
+        console.warn("Error invoking parent.edited_upload:", e);
+      }
+
+      try {
+        if (typeof window.parent.upload === "function") {
+          window.parent.upload(payload);
+          delivered = true;
+        }
+      } catch (e) {
+        console.warn("Error invoking parent.upload:", e);
+      }
+    }
+
+    if (typeof window.edited_upload === "function") {
+      try {
+        window.edited_upload(payload);
+        delivered = true;
+      } catch (e) {
+        console.warn("Error invoking window.edited_upload:", e);
       }
     }
 
