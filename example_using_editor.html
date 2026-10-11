@@ -256,7 +256,8 @@
     <div class="container">
         <header>
             <h1>Host Application - Image Editor Integration</h1>
-            <p>Demonstration of Popup Mode, Iframe Modal Mode, Bi-directional postMessage & window.edited_upload
+            <p>Demonstration of Popup Mode, Iframe Modal Mode, New Tab Mode, Bi-directional postMessage &
+                window.edited_upload
                 callbacks.</p>
         </header>
 
@@ -314,6 +315,13 @@
                     </svg>
                     Open in Popup Window
                 </button>
+                <button class="btn btn-secondary" id="btnOpenTab">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zm5 16H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z" />
+                    </svg>
+                    Open in New Tab
+                </button>
                 <button class="btn btn-secondary" id="btnOpenModal">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path
@@ -346,6 +354,7 @@
 
     <script>
         let popupWindow = null;
+        let tabWindow = null;
         let receivedItems = [];
 
         function generateRandomToken() {
@@ -422,7 +431,19 @@
             }
         });
 
-        // --- 2. Iframe Modal Invocation ---
+        // --- 2. New Tab Invocation ---
+        document.getElementById('btnOpenTab').addEventListener('click', () => {
+            // Generate a fresh token for each session
+            document.getElementById('cfgToken').value = generateRandomToken();
+            const url = buildEditorUrl();
+            log(`Opening new tab: ${url}`);
+            tabWindow = window.open(url, '_blank');
+            if (tabWindow) {
+                setTimeout(() => sendInitToEditor(tabWindow), 300);
+            }
+        });
+
+        // --- 3. Iframe Modal Invocation ---
         const modal = document.getElementById('modalBackdrop');
         const iframe = document.getElementById('editorIframe');
 
@@ -441,20 +462,20 @@
             modal.classList.add('active');
         });
 
-        // --- 3. Direct Callback Fallback: window.edited_upload(payload) ---
+        // --- 4. Direct Callback Fallback: window.edited_upload(payload) ---
         window.edited_upload = function (payload) {
             log(`Received direct callback edited_upload() for: ${payload.name} (${payload.width}x${payload.height}, ${formatBytes(payload.fileSize)})`);
             handleReceivedPayload(payload);
         };
 
-        // --- 4. Bi-directional postMessage Handlers ---
+        // --- 5. Bi-directional postMessage Handlers ---
         window.addEventListener('message', (event) => {
             const data = event.data;
             if (!data || typeof data !== 'object') return;
 
             if (data.type === 'EDITOR_READY') {
                 log(`Handshake received: EDITOR_READY (token: ${data.token || 'handshake'})`);
-                const targetWin = event.source || (iframe ? iframe.contentWindow : null) || popupWindow;
+                const targetWin = event.source || (iframe ? iframe.contentWindow : null) || popupWindow || tabWindow;
                 sendInitToEditor(targetWin);
             } else if (data.type === 'IMAGE_UPLOAD_ITEM') {
                 const payload = data.payload;

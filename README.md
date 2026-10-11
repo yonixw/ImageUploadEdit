@@ -1,6 +1,6 @@
 # ImageUploadEdit
 
-A standalone, zero-external-dependency HTML5 client-side image uploader and multi-tool image editor. Works out of the box in an iframe modal, a popup window, or as a standalone app.
+A standalone, zero-external-dependency HTML5 client-side image uploader and multi-tool image editor. Works out of the box in an iframe modal, a popup window, a new browser tab, or as a standalone app.
 
 > **AI Disclosure:** This project was developed and designed with the assistance of AI (**Google Gemini 3.7**).
 
@@ -26,7 +26,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 
 ## How to Embed the Editor in Any Web Page
 
-You only need `editor.html` (along with its `js/` and `theme/` folders). You can integrate it via **Iframe Modal** or **Popup Window**.
+You only need `editor.html` (along with its `js/` and `theme/` folders). You can integrate it via **Iframe Modal**, **Popup Window**, or **New Tab**.
 
 ### 1. Iframe Modal Embedding
 
@@ -55,6 +55,16 @@ function openEditorPopup(token = 'session_123', theme = 'midnight') {
   const params = `token=${encodeURIComponent(token)}&theme=${encodeURIComponent(theme)}&autoClose=true`;
   const url = `editor.html?${params}#${params}`;
   window.open(url, 'ImageEditorPopup', 'width=1150,height=850,resizable=yes');
+}
+```
+
+### 3. Open in New Tab Embedding
+
+```javascript
+function openEditorNewTab(token = 'session_123', theme = 'midnight') {
+  const params = `token=${encodeURIComponent(token)}&theme=${encodeURIComponent(theme)}&autoClose=true`;
+  const url = `editor.html?${params}#${params}`;
+  window.open(url, '_blank');
 }
 ```
 
