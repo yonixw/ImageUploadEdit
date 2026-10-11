@@ -1,18 +1,26 @@
 /**
  * Image Editor - Export, Compression & Batch Upload Module
  * Handles format conversion, live byte size estimation, max dimension constraints,
- * status bar formatting, and the "Upload All & Done" execution pipeline.
+ * quality preview toggling, and single/batch upload execution pipelines.
  */
 
 window.EditorExport = (function () {
   let estimatedSizeText = "0KB";
   let estimatedBytes = 0;
   let isEstimating = false;
+  let isPreviewQualityOn = false;
+  let previewCacheCanvas = null;
 
   function init() {
     const btnUploadDone = document.getElementById("btnUploadDone");
+    const btnUploadSingle = document.getElementById("btnUploadSingle");
+
     if (btnUploadDone) {
       btnUploadDone.addEventListener("click", executeBatchExport);
+    }
+
+    if (btnUploadSingle) {
+      btnUploadSingle.addEventListener("click", executeSingleExport);
     }
   }
 
@@ -44,6 +52,7 @@ window.EditorExport = (function () {
     formatSelect.addEventListener("change", (e) => {
       settings.format = e.target.value;
       calculateLiveSize();
+      if (isPreviewQualityOn) refreshPreview();
     });
     container.appendChild(formatSelect);
 
@@ -59,7 +68,7 @@ window.EditorExport = (function () {
 
     const qInput = document.createElement("input");
     qInput.type = "range";
-    qInput.min = "10";
+    qInput.min = "5";
     qInput.max = "100";
     qInput.value = Math.round(settings.quality * 100);
     qInput.className = "tool-input-slider";
@@ -68,6 +77,7 @@ window.EditorExport = (function () {
       settings.quality = val / 100;
       qSpan.textContent = `Quality (${val}%):`;
       calculateLiveSize();
+      if (isPreviewQualityOn) refreshPreview();
     });
     container.appendChild(qInput);
 
@@ -75,19 +85,23 @@ window.EditorExport = (function () {
     divider2.className = "tool-divider";
     container.appendChild(divider2);
 
-    // Max Dimension Selector
+    // Max Dimension Selector with descriptive presets (Max Resize)
     const mSpan = document.createElement("span");
     mSpan.className = "tool-label";
-    mSpan.textContent = "Max Dimension:";
+    mSpan.textContent = "Max Resize:";
     container.appendChild(mSpan);
 
     const maxSelect = document.createElement("select");
     maxSelect.className = "tool-select";
     [
-      { id: 0, label: "Original Size" },
-      { id: 1080, label: "1080px" },
-      { id: 1920, label: "1920px (Full HD)" },
-      { id: 2560, label: "2560px (2K)" },
+      { id: 0, label: "Original (No limit)" },
+      { id: 150, label: "150px - Square Thumb / Icon" },
+      { id: 300, label: "300px - Avatar / Profile (1:1)" },
+      { id: 600, label: "600px - Small / Card" },
+      { id: 1080, label: "1080px - Medium / Web" },
+      { id: 1200, label: "1200px - Social Media Landscape" },
+      { id: 1920, label: "1920px - Full HD (16:9)" },
+      { id: 2560, label: "2560px - 2K QHD" },
     ].forEach((m) => {
       const opt = document.createElement("option");
       opt.value = m.id;
@@ -98,8 +112,59 @@ window.EditorExport = (function () {
     maxSelect.addEventListener("change", (e) => {
       settings.maxSize = parseInt(e.target.value, 10);
       calculateLiveSize();
+      if (isPreviewQualityOn) refreshPreview();
     });
     container.appendChild(maxSelect);
+
+    const divider3 = document.createElement("div");
+    divider3.className = "tool-divider";
+    container.appendChild(divider3);
+
+    // Preview Toggle (Preview quality compression & resize)
+    const previewBtn = document.createElement("button");
+    previewBtn.className = `tool-btn ${isPreviewQualityOn ? "active" : ""}`;
+    previewBtn.textContent = isPreviewQualityOn
+      ? "✓ Preview: ON"
+      : "👁 Preview Quality";
+    previewBtn.title = "Toggle live preview of compressed & resized output";
+    previewBtn.addEventListener("click", () => {
+      isPreviewQualityOn = !isPreviewQualityOn;
+      previewBtn.className = `tool-btn ${isPreviewQualityOn ? "active" : ""}`;
+      previewBtn.textContent = isPreviewQualityOn
+        ? "✓ Preview: ON"
+        : "👁 Preview Quality";
+      refreshPreview();
+    });
+    container.appendChild(previewBtn);
+  }
+
+  async function refreshPreview() {
+    const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
+    if (!item || !item.currentCanvas) return;
+
+    if (!isPreviewQualityOn) {
+      if (window.EditorCanvas) window.EditorCanvas.render();
+      return;
+    }
+
+    try {
+      const { blob } = await generateExportBlob(item);
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const pCanvas = document.createElement("canvas");
+        pCanvas.width = img.naturalWidth || img.width;
+        pCanvas.height = img.naturalHeight || img.height;
+        const pCtx = pCanvas.getContext("2d");
+        pCtx.drawImage(img, 0, 0);
+        previewCacheCanvas = pCanvas;
+        URL.revokeObjectURL(url);
+        if (window.EditorCanvas) window.EditorCanvas.render();
+      };
+      img.src = url;
+    } catch (e) {
+      console.warn("Error rendering preview:", e);
+    }
   }
 
   function updateSettingsFromItem(item) {
@@ -154,7 +219,27 @@ window.EditorExport = (function () {
 
     const w = item.currentCanvas.width;
     const h = item.currentCanvas.height;
-    statusElem.textContent = `${zoomPct}%, ${w}x${h}, ${estimatedSizeText}`;
+    const settings = item.exportSettings;
+    let sizeDesc = `${w}x${h}`;
+
+    if (
+      settings &&
+      settings.maxSize > 0 &&
+      (w > settings.maxSize || h > settings.maxSize)
+    ) {
+      let tw = w,
+        th = h;
+      if (w > h) {
+        th = Math.round((h * settings.maxSize) / w);
+        tw = settings.maxSize;
+      } else {
+        tw = Math.round((w * settings.maxSize) / h);
+        th = settings.maxSize;
+      }
+      sizeDesc = `${w}x${h} → ${tw}x${th} (Max resize)`;
+    }
+
+    statusElem.textContent = `${zoomPct}%, ${sizeDesc}, ${estimatedSizeText}`;
   }
 
   function formatBytes(bytes) {
@@ -234,6 +319,79 @@ window.EditorExport = (function () {
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
+  }
+
+  /**
+   * Single Item Upload Pipeline: Exports only the active single image
+   */
+  async function executeSingleExport() {
+    const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
+    if (!item) {
+      if (window.EditorUpload)
+        window.EditorUpload.showToast("No active image to upload.");
+      return;
+    }
+
+    const btn = document.getElementById("btnUploadSingle");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "Uploading...";
+    }
+
+    window.EditorQueue.updateItemStatus(item.id, "UPLOADING", 10);
+
+    try {
+      const { blob, width, height, mimeType } = await generateExportBlob(item);
+      window.EditorQueue.updateItemStatus(item.id, "UPLOADING", 60);
+
+      const dataUrl = await blobToDataUrl(blob);
+      window.EditorQueue.updateItemStatus(item.id, "UPLOADING", 90);
+
+      let ext = "webp";
+      if (mimeType === "image/jpeg") ext = "jpg";
+      else if (mimeType === "image/png") ext = "png";
+
+      const baseName = item.name.replace(/\.[^/.]+$/, "");
+      const finalName = `${baseName}-edited.${ext}`;
+
+      const payload = {
+        id: item.id,
+        index: window.EditorQueue.activeIndex,
+        token: window.EditorHost?.config?.token || "",
+        name: finalName,
+        mimeType: mimeType,
+        blob: blob,
+        dataUrl: dataUrl,
+        width: width,
+        height: height,
+        fileSize: blob.size,
+      };
+
+      if (window.EditorHost) {
+        await window.EditorHost.sendImageItem(payload);
+      }
+
+      window.EditorQueue.updateItemStatus(item.id, "DONE", 100);
+      if (window.EditorUpload) {
+        window.EditorUpload.showToast(
+          `Image "${finalName}" uploaded successfully`,
+        );
+      }
+    } catch (err) {
+      console.error("Error exporting single item:", item.name, err);
+      window.EditorQueue.updateItemStatus(item.id, "ERROR", 0);
+      if (window.EditorUpload) {
+        window.EditorUpload.showToast("Failed to upload image.");
+      }
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+          Upload Image
+        `;
+      }
+    }
   }
 
   /**
@@ -320,12 +478,19 @@ window.EditorExport = (function () {
   }
 
   return {
+    get isPreviewQualityOn() {
+      return isPreviewQualityOn;
+    },
+    get previewCacheCanvas() {
+      return previewCacheCanvas;
+    },
     init,
     buildExportSubToolbar,
     updateSettingsFromItem,
     calculateLiveSize,
     updateStatusBarText,
     generateExportBlob,
+    executeSingleExport,
     executeBatchExport,
   };
 })();

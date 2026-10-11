@@ -9,6 +9,8 @@ window.EditorHost = (function () {
 
   const config = {
     token: urlParams.get("token") || "",
+    title: urlParams.get("title") || "",
+    theme: (urlParams.get("theme") || "dark").toLowerCase(),
     autoClose:
       urlParams.get("autoClose") === "true" ||
       urlParams.get("autoClose") === "1",
@@ -22,6 +24,19 @@ window.EditorHost = (function () {
   const isEmbedded = isPopup || isIframe;
 
   function init() {
+    // Apply requested theme stylesheet
+    setTheme(config.theme);
+
+    // Set custom title if provided
+    if (config.title) {
+      document.title = config.title;
+      const headerTitle = document.getElementById("appHeaderTitle");
+      if (headerTitle) {
+        headerTitle.textContent = config.title;
+        headerTitle.style.display = "inline-block";
+      }
+    }
+
     // Show close button if opened in popup/modal
     const closeBtn = document.getElementById("btnCloseWindow");
     if (closeBtn && isEmbedded) {
@@ -76,7 +91,10 @@ window.EditorHost = (function () {
       if (data.token) config.token = data.token;
       if (data.config) {
         Object.assign(config, data.config);
+        if (data.config.theme) setTheme(data.config.theme);
       }
+    } else if (data.action === "SET_THEME") {
+      if (data.theme) setTheme(data.theme);
     } else if (data.action === "UPLOAD_STATUS") {
       if (
         window.EditorQueue &&
@@ -216,12 +234,23 @@ window.EditorHost = (function () {
     }
   }
 
+  function setTheme(themeName) {
+    const validThemes = ["dark", "glass", "dark-orange"];
+    const theme = validThemes.includes(themeName) ? themeName : "dark";
+    config.theme = theme;
+    const link = document.getElementById("themeStylesheet");
+    if (link) {
+      link.href = `theme/${theme}.css`;
+    }
+  }
+
   return {
     config,
     isPopup,
     isIframe,
     isEmbedded,
     init,
+    setTheme,
     sendHandshake,
     sendImageItem,
     sendDone,

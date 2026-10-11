@@ -167,7 +167,14 @@ window.EditorCanvas = (function () {
     displayCtx.clearRect(0, 0, rect.width, rect.height);
 
     if (currentItem && currentItem.currentCanvas) {
-      const srcCanvas = currentItem.currentCanvas;
+      let srcCanvas = currentItem.currentCanvas;
+      if (
+        window.EditorExport &&
+        window.EditorExport.isPreviewQualityOn &&
+        window.EditorExport.previewCacheCanvas
+      ) {
+        srcCanvas = window.EditorExport.previewCacheCanvas;
+      }
       const drawX = Math.round(pan.x);
       const drawY = Math.round(pan.y);
       const drawW = Math.round(srcCanvas.width * zoom);
@@ -233,6 +240,25 @@ window.EditorCanvas = (function () {
 
   // --- Interaction Event Listeners ---
   function bindEvents() {
+    // Status Bar Helper Controls (Center / Fit, 1:1, Zoom In, Zoom Out)
+    const btnCenter = document.getElementById("btnCenterView");
+    const btn100 = document.getElementById("btnZoom100");
+    const btnIn = document.getElementById("btnZoomIn");
+    const btnOut = document.getElementById("btnZoomOut");
+
+    if (btnCenter) {
+      btnCenter.addEventListener("click", () => fitToScreen());
+    }
+    if (btn100) {
+      btn100.addEventListener("click", () => resetZoom());
+    }
+    if (btnIn) {
+      btnIn.addEventListener("click", () => setZoom(zoom * 1.25));
+    }
+    if (btnOut) {
+      btnOut.addEventListener("click", () => setZoom(zoom * 0.8));
+    }
+
     // Keyboard Space panning
     window.addEventListener("keydown", (e) => {
       if (e.code === "Space" && !isSpacePressed && !isInputFocused()) {

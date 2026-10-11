@@ -624,11 +624,16 @@ window.EditorTools = (function () {
   }
 
   // B. Transform Sub Toolbar (Rotate & Flip)
+  const transformState = {
+    customAngle: 0,
+    bgColor: "transparent", // 'transparent' | '#ffffff' | '#000000'
+  };
+
   function buildTransformSubToolbar(container) {
     const actions = [
-      { label: "90° CW", fn: () => rotateCanvas(90) },
-      { label: "90° CCW", fn: () => rotateCanvas(-90) },
-      { label: "180°", fn: () => rotateCanvas(180) },
+      { label: "90° CW", fn: () => rotateCanvas(90, transformState.bgColor) },
+      { label: "90° CCW", fn: () => rotateCanvas(-90, transformState.bgColor) },
+      { label: "180°", fn: () => rotateCanvas(180, transformState.bgColor) },
       { label: "Flip Horiz", fn: () => flipCanvas(true, false) },
       { label: "Flip Vert", fn: () => flipCanvas(false, true) },
     ];
@@ -640,24 +645,120 @@ window.EditorTools = (function () {
       btn.addEventListener("click", a.fn);
       container.appendChild(btn);
     });
+
+    const divider = document.createElement("div");
+    divider.className = "tool-divider";
+    container.appendChild(divider);
+
+    // Free degree rotation controls
+    const rotLabel = document.createElement("span");
+    rotLabel.className = "tool-label";
+    rotLabel.textContent = "Free Rotate:";
+    container.appendChild(rotLabel);
+
+    const angleInput = document.createElement("input");
+    angleInput.type = "number";
+    angleInput.min = "-180";
+    angleInput.max = "180";
+    angleInput.value = transformState.customAngle;
+    angleInput.style.width = "52px";
+    angleInput.style.height = "26px";
+    angleInput.style.background = "var(--bg-surface)";
+    angleInput.style.border = "1px solid var(--border-color)";
+    angleInput.style.color = "#fff";
+    angleInput.style.borderRadius = "4px";
+    angleInput.style.padding = "0 4px";
+    angleInput.style.fontSize = "12px";
+    angleInput.style.textAlign = "center";
+    angleInput.addEventListener("change", (e) => {
+      transformState.customAngle = parseFloat(e.target.value) || 0;
+    });
+    container.appendChild(angleInput);
+
+    const degUnit = document.createElement("span");
+    degUnit.className = "tool-label";
+    degUnit.textContent = "°";
+    degUnit.style.marginRight = "2px";
+    container.appendChild(degUnit);
+
+    // Quick lean / nudge buttons
+    [-15, -1, 1, 15].forEach((delta) => {
+      const nBtn = document.createElement("button");
+      nBtn.className = "btn-status";
+      nBtn.style.height = "26px";
+      nBtn.textContent = (delta > 0 ? `+${delta}` : `${delta}`) + "°";
+      nBtn.addEventListener("click", () => {
+        transformState.customAngle =
+          Math.round((transformState.customAngle + delta) * 10) / 10;
+        // wrap -180..180
+        if (transformState.customAngle > 180) transformState.customAngle -= 360;
+        if (transformState.customAngle < -180)
+          transformState.customAngle += 360;
+        angleInput.value = transformState.customAngle;
+      });
+      container.appendChild(nBtn);
+    });
+
+    // Background color selector for newly exposed canvas corners
+    const bgLabel = document.createElement("span");
+    bgLabel.className = "tool-label";
+    bgLabel.textContent = "BG:";
+    container.appendChild(bgLabel);
+
+    const bgSelect = document.createElement("select");
+    bgSelect.className = "tool-select";
+    [
+      { id: "transparent", label: "Transparent" },
+      { id: "#ffffff", label: "White" },
+      { id: "#000000", label: "Black" },
+    ].forEach((opt) => {
+      const o = document.createElement("option");
+      o.value = opt.id;
+      o.textContent = opt.label;
+      bgSelect.appendChild(o);
+    });
+    bgSelect.value = transformState.bgColor;
+    bgSelect.addEventListener("change", (e) => {
+      transformState.bgColor = e.target.value;
+    });
+    container.appendChild(bgSelect);
+
+    const applyRotBtn = document.createElement("button");
+    applyRotBtn.className = "btn btn-primary";
+    applyRotBtn.style.height = "26px";
+    applyRotBtn.style.fontSize = "12px";
+    applyRotBtn.textContent = "Apply Rotate";
+    applyRotBtn.addEventListener("click", () => {
+      if (transformState.customAngle !== 0) {
+        rotateCanvas(transformState.customAngle, transformState.bgColor);
+        transformState.customAngle = 0;
+        angleInput.value = 0;
+      }
+    });
+    container.appendChild(applyRotBtn);
   }
 
-  function rotateCanvas(degrees) {
+  function rotateCanvas(degrees, bgColor = "transparent") {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
-    if (!item || !item.currentCanvas) return;
+    if (!item || !item.currentCanvas || degrees === 0) return;
 
     const src = item.currentCanvas;
     const rad = (degrees * Math.PI) / 180;
     const sin = Math.abs(Math.sin(rad));
     const cos = Math.abs(Math.cos(rad));
 
-    const newW = Math.round(src.width * cos + src.height * sin);
-    const newH = Math.round(src.width * sin + src.height * cos);
+    const newW = Math.max(1, Math.round(src.width * cos + src.height * sin));
+    const newH = Math.max(1, Math.round(src.width * sin + src.height * cos));
 
     const rotated = document.createElement("canvas");
     rotated.width = newW;
     rotated.height = newH;
     const ctx = rotated.getContext("2d");
+
+    if (bgColor && bgColor !== "transparent") {
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, newW, newH);
+    }
 
     ctx.translate(newW / 2, newH / 2);
     ctx.rotate(rad);
@@ -955,122 +1056,106 @@ window.EditorTools = (function () {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (!item || !item.currentCanvas) return;
 
-    const rx = Math.max(0, Math.min(rect.x, rect.x + rect.w));
-    const ry = Math.max(0, Math.min(rect.y, rect.y + rect.h));
-    const rw = Math.min(item.currentCanvas.width - rx, Math.abs(rect.w));
-    const rh = Math.min(item.currentCanvas.height - ry, Math.abs(rect.h));
+    const rx = Math.max(0, Math.floor(Math.min(rect.x, rect.x + rect.w)));
+    const ry = Math.max(0, Math.floor(Math.min(rect.y, rect.y + rect.h)));
+    const rw = Math.max(
+      1,
+      Math.min(item.currentCanvas.width - rx, Math.floor(Math.abs(rect.w))),
+    );
+    const rh = Math.max(
+      1,
+      Math.min(item.currentCanvas.height - ry, Math.floor(Math.abs(rect.h))),
+    );
 
     if (rw <= 2 || rh <= 2) return;
 
     const ctx = item.currentCanvas.getContext("2d");
-    const imgData = ctx.getImageData(rx, ry, rw, rh);
-    const d = imgData.data;
 
     if (type === "pixelate") {
+      const imgData = ctx.getImageData(rx, ry, rw, rh);
+      const d = imgData.data;
       const blockSize = Math.max(4, radius);
+
       for (let y = 0; y < rh; y += blockSize) {
+        const blockH = Math.min(blockSize, rh - y);
         for (let x = 0; x < rw; x += blockSize) {
-          // Calculate average color in block
+          const blockW = Math.min(blockSize, rw - x);
           let r = 0,
             g = 0,
             b = 0,
-            a = 0,
-            count = 0;
-          for (let by = 0; by < blockSize && y + by < rh; by++) {
-            for (let bx = 0; bx < blockSize && x + bx < rw; bx++) {
-              const idx = ((y + by) * rw + (x + bx)) * 4;
-              r += d[idx];
-              g += d[idx + 1];
-              b += d[idx + 2];
-              a += d[idx + 3];
-              count++;
+            a = 0;
+          const count = blockW * blockH;
+
+          for (let by = 0; by < blockH; by++) {
+            let rowIdx = ((y + by) * rw + x) * 4;
+            for (let bx = 0; bx < blockW; bx++) {
+              r += d[rowIdx];
+              g += d[rowIdx + 1];
+              b += d[rowIdx + 2];
+              a += d[rowIdx + 3];
+              rowIdx += 4;
             }
           }
+
           r = Math.round(r / count);
           g = Math.round(g / count);
           b = Math.round(b / count);
           a = Math.round(a / count);
 
-          // Fill block with average
-          for (let by = 0; by < blockSize && y + by < rh; by++) {
-            for (let bx = 0; bx < blockSize && x + bx < rw; bx++) {
-              const idx = ((y + by) * rw + (x + bx)) * 4;
-              d[idx] = r;
-              d[idx + 1] = g;
-              d[idx + 2] = b;
-              d[idx + 3] = a;
+          for (let by = 0; by < blockH; by++) {
+            let rowIdx = ((y + by) * rw + x) * 4;
+            for (let bx = 0; bx < blockW; bx++) {
+              d[rowIdx] = r;
+              d[rowIdx + 1] = g;
+              d[rowIdx + 2] = b;
+              d[rowIdx + 3] = a;
+              rowIdx += 4;
             }
           }
         }
       }
+      ctx.putImageData(imgData, rx, ry);
     } else {
-      // Box blur
-      const passes = 3;
-      const bRad = Math.max(2, Math.floor(radius / 3));
-      for (let p = 0; p < passes; p++) {
-        boxBlurH(d, rw, rh, bRad);
-        boxBlurT(d, rw, rh, bRad);
+      // High-performance Canvas Gaussian / Box Blur (never hangs, O(1) hardware accelerated)
+      const bRad = Math.max(2, Math.floor(radius / 2));
+      const off = document.createElement("canvas");
+      off.width = rw;
+      off.height = rh;
+      const offCtx = off.getContext("2d");
+
+      offCtx.drawImage(item.currentCanvas, rx, ry, rw, rh, 0, 0, rw, rh);
+
+      // Fast multi-scale downscale / upscale blur fallback + ctx.filter
+      if ("filter" in offCtx) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(rx, ry, rw, rh);
+        ctx.clip();
+        ctx.filter = `blur(${bRad}px)`;
+        ctx.drawImage(off, rx, ry, rw, rh);
+        ctx.restore();
+      } else {
+        // High quality multi-step downscale & upscale
+        const scale = Math.max(0.05, 1 / (bRad * 0.8));
+        const sw = Math.max(2, Math.round(rw * scale));
+        const sh = Math.max(2, Math.round(rh * scale));
+        const small = document.createElement("canvas");
+        small.width = sw;
+        small.height = sh;
+        const sCtx = small.getContext("2d");
+        sCtx.imageSmoothingEnabled = true;
+        sCtx.imageSmoothingQuality = "high";
+        sCtx.drawImage(off, 0, 0, sw, sh);
+
+        ctx.save();
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(small, 0, 0, sw, sh, rx, ry, rw, rh);
+        ctx.restore();
       }
     }
 
-    ctx.putImageData(imgData, rx, ry);
     pushHistorySnapshot();
-  }
-
-  function boxBlurH(scl, w, h, r) {
-    const arr = new Uint8ClampedArray(scl);
-    for (let i = 0; i < h; i++) {
-      for (let j = 0; j < w; j++) {
-        let valR = 0,
-          valG = 0,
-          valB = 0,
-          valA = 0,
-          count = 0;
-        for (let ix = j - r; ix <= j + r; ix++) {
-          if (ix >= 0 && ix < w) {
-            const idx = (i * w + ix) * 4;
-            valR += arr[idx];
-            valG += arr[idx + 1];
-            valB += arr[idx + 2];
-            valA += arr[idx + 3];
-            count++;
-          }
-        }
-        const curIdx = (i * w + j) * 4;
-        scl[curIdx] = valR / count;
-        scl[curIdx + 1] = valG / count;
-        scl[curIdx + 2] = valB / count;
-        scl[curIdx + 3] = valA / count;
-      }
-    }
-  }
-
-  function boxBlurT(scl, w, h, r) {
-    const arr = new Uint8ClampedArray(scl);
-    for (let i = 0; i < h; i++) {
-      for (let j = 0; j < w; j++) {
-        let valR = 0,
-          valG = 0,
-          valB = 0,
-          valA = 0,
-          count = 0;
-        for (let iy = i - r; iy <= i + r; iy++) {
-          if (iy >= 0 && iy < h) {
-            const idx = (iy * w + j) * 4;
-            valR += arr[idx];
-            valG += arr[idx + 1];
-            valB += arr[idx + 2];
-            valA += arr[idx + 3];
-            count++;
-          }
-        }
-        const curIdx = (i * w + j) * 4;
-        scl[curIdx] = valR / count;
-        scl[curIdx + 1] = valG / count;
-        scl[curIdx + 2] = valB / count;
-        scl[curIdx + 3] = valA / count;
-      }
-    }
   }
 
   // E. Brush Sub Toolbar

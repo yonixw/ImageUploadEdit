@@ -264,8 +264,20 @@
             <div class="card-title">Integration Parameters</div>
             <div class="config-grid">
                 <div class="form-group">
+                    <label>Theme (?theme=)</label>
+                    <select id="cfgTheme">
+                        <option value="dark">Dark (Default)</option>
+                        <option value="glass">Glass (Glassmorphism)</option>
+                        <option value="dark-orange">Dark Orange</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Modal / Window Title (?title=)</label>
+                    <input type="text" id="cfgTitle" value="Photo & Media Studio">
+                </div>
+                <div class="form-group">
                     <label>Context Token (?token=)</label>
-                    <input type="text" id="cfgToken" value="session_token_xyz999">
+                    <input type="text" id="cfgToken" value="">
                 </div>
                 <div class="form-group">
                     <label>Default Output Format</label>
@@ -279,8 +291,9 @@
                     <label>Max Dimension Limit</label>
                     <select id="cfgMaxSize">
                         <option value="0">Original (No limit)</option>
+                        <option value="300">300px (Avatar / Profile)</option>
                         <option value="1080">1080px</option>
-                        <option value="1920">1920px</option>
+                        <option value="1920">1920px (Full HD)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -324,8 +337,8 @@
     <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal-container">
             <div class="modal-bar">
-                <span>Image Editor Modal</span>
-                <button class="modal-close-btn" id="btnCloseModal">&times;</button>
+                <span id="modalTitleDisplay">Image Editor</span>
+                <button class="modal-close-btn" id="btnCloseModal" title="Close">&times;</button>
             </div>
             <iframe id="editorIframe" src="about:blank"></iframe>
         </div>
@@ -335,6 +348,13 @@
         let popupWindow = null;
         let receivedItems = [];
 
+        function generateRandomToken() {
+            return 'tok_' + Math.random().toString(36).substring(2, 8) + '_' + Date.now().toString(36);
+        }
+
+        // Set initial random token on page load
+        document.getElementById('cfgToken').value = generateRandomToken();
+
         function log(msg) {
             const box = document.getElementById('logBox');
             const time = new Date().toLocaleTimeString();
@@ -343,11 +363,22 @@
         }
 
         function buildEditorUrl() {
-            const token = encodeURIComponent(document.getElementById('cfgToken').value.trim());
+            // Generate random token before opening
+            const randomToken = generateRandomToken();
+            document.getElementById('cfgToken').value = randomToken;
+
+            const theme = encodeURIComponent(document.getElementById('cfgTheme').value);
+            const titleVal = document.getElementById('cfgTitle').value.trim() || 'Image Editor';
+            const title = encodeURIComponent(titleVal);
+            const token = encodeURIComponent(randomToken);
             const format = encodeURIComponent(document.getElementById('cfgFormat').value);
             const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
             const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
-            return `editor.html?token=${token}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+
+            // Update modal header title display
+            document.getElementById('modalTitleDisplay').textContent = titleVal;
+
+            return `editor.html?token=${token}&title=${title}&theme=${theme}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
         }
 
         // --- 1. Popup Window Invocation ---

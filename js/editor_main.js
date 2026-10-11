@@ -73,14 +73,22 @@ window.EditorApp = (function () {
     if (viewGallery)
       viewGallery.classList.toggle("active", tabName === "gallery");
 
-    if (tabName === "gallery" && window.EditorQueue) {
-      window.EditorQueue.renderGallery();
-    }
+    // Dynamic header action button visibility based on active tab
+    const btnUploadSingle = document.getElementById("btnUploadSingle");
+    const btnUploadDone = document.getElementById("btnUploadDone");
 
     if (tabName === "edit") {
+      if (btnUploadSingle) btnUploadSingle.style.display = "inline-flex";
+      if (btnUploadDone) btnUploadDone.style.display = "none";
       if (window.EditorCanvas) {
         window.EditorCanvas.resize();
         window.EditorCanvas.fitToScreen();
+      }
+    } else {
+      if (btnUploadSingle) btnUploadSingle.style.display = "none";
+      if (btnUploadDone) btnUploadDone.style.display = "inline-flex";
+      if (tabName === "gallery" && window.EditorQueue) {
+        window.EditorQueue.renderGallery();
       }
     }
   }
