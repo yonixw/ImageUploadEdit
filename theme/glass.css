@@ -116,15 +116,15 @@ body {
 }
 
 .header-title {
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     color: var(--text-main);
-    margin-right: 12px;
+    margin-right: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 180px;
-    display: none;
+    max-width: 200px;
+    display: inline-block;
     letter-spacing: 0.3px;
 }
 

@@ -73,23 +73,44 @@ window.EditorApp = (function () {
     if (viewGallery)
       viewGallery.classList.toggle("active", tabName === "gallery");
 
-    // Dynamic header action button visibility based on active tab
+    // Dynamic toolbar & header action button visibility based on active tab:
+    // 1) Add more tab: no upload this/all button AND no 2 tools toolbar
+    // 2) Gallery tab: upload all button AND no 2 tools toolbar
+    // 3) Edit tab: upload this button AND yes to 2 tools toolbar
     const btnUploadSingle = document.getElementById("btnUploadSingle");
     const btnUploadDone = document.getElementById("btnUploadDone");
+    const tb1Wrapper = document.getElementById("toolbar1Wrapper");
+    const tb2Wrapper = document.getElementById("toolbar2Wrapper");
+    const statusBar = document.getElementById("statusBarWrapper");
 
     if (tabName === "edit") {
       if (btnUploadSingle) btnUploadSingle.style.display = "inline-flex";
       if (btnUploadDone) btnUploadDone.style.display = "none";
+      if (tb1Wrapper) tb1Wrapper.style.display = "flex";
+      if (tb2Wrapper) tb2Wrapper.style.display = "flex";
+      if (statusBar) statusBar.style.display = "flex";
+
       if (window.EditorCanvas) {
         window.EditorCanvas.resize();
         window.EditorCanvas.fitToScreen();
       }
-    } else {
+    } else if (tabName === "gallery") {
       if (btnUploadSingle) btnUploadSingle.style.display = "none";
       if (btnUploadDone) btnUploadDone.style.display = "inline-flex";
-      if (tabName === "gallery" && window.EditorQueue) {
+      if (tb1Wrapper) tb1Wrapper.style.display = "none";
+      if (tb2Wrapper) tb2Wrapper.style.display = "none";
+      if (statusBar) statusBar.style.display = "none";
+
+      if (window.EditorQueue) {
         window.EditorQueue.renderGallery();
       }
+    } else {
+      // 'upload' / Add more tab
+      if (btnUploadSingle) btnUploadSingle.style.display = "none";
+      if (btnUploadDone) btnUploadDone.style.display = "none";
+      if (tb1Wrapper) tb1Wrapper.style.display = "none";
+      if (tb2Wrapper) tb2Wrapper.style.display = "none";
+      if (statusBar) statusBar.style.display = "none";
     }
   }
 

@@ -333,13 +333,9 @@
         </div>
     </div>
 
-    <!-- Iframe Modal Backdrop -->
+    <!-- Iframe Modal Backdrop (unified: no redundant second header) -->
     <div class="modal-backdrop" id="modalBackdrop">
         <div class="modal-container">
-            <div class="modal-bar">
-                <span id="modalTitleDisplay">Image Editor</span>
-                <button class="modal-close-btn" id="btnCloseModal" title="Close">&times;</button>
-            </div>
             <iframe id="editorIframe" src="about:blank"></iframe>
         </div>
     </div>
@@ -363,26 +359,27 @@
         }
 
         function buildEditorUrl() {
-            // Generate random token before opening
-            const randomToken = generateRandomToken();
-            document.getElementById('cfgToken').value = randomToken;
+            let tokenVal = document.getElementById('cfgToken').value.trim();
+            if (!tokenVal) {
+                tokenVal = generateRandomToken();
+                document.getElementById('cfgToken').value = tokenVal;
+            }
 
             const theme = encodeURIComponent(document.getElementById('cfgTheme').value);
             const titleVal = document.getElementById('cfgTitle').value.trim() || 'Image Editor';
             const title = encodeURIComponent(titleVal);
-            const token = encodeURIComponent(randomToken);
+            const token = encodeURIComponent(tokenVal);
             const format = encodeURIComponent(document.getElementById('cfgFormat').value);
             const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
             const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
-
-            // Update modal header title display
-            document.getElementById('modalTitleDisplay').textContent = titleVal;
 
             return `editor.html?token=${token}&title=${title}&theme=${theme}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
         }
 
         // --- 1. Popup Window Invocation ---
         document.getElementById('btnOpenPopup').addEventListener('click', () => {
+            // Generate a fresh token for each session
+            document.getElementById('cfgToken').value = generateRandomToken();
             const url = buildEditorUrl();
             log(`Opening popup window: ${url}`);
             popupWindow = window.open(url, 'ImageEditorHostPopup', 'width=1150,height=850,resizable=yes,scrollbars=no');
@@ -391,19 +388,14 @@
         // --- 2. Iframe Modal Invocation ---
         const modal = document.getElementById('modalBackdrop');
         const iframe = document.getElementById('editorIframe');
-        const btnCloseModal = document.getElementById('btnCloseModal');
 
         document.getElementById('btnOpenModal').addEventListener('click', () => {
+            // Generate a fresh token for each session
+            document.getElementById('cfgToken').value = generateRandomToken();
             const url = buildEditorUrl();
             log(`Loading iframe modal: ${url}`);
             iframe.src = url;
             modal.classList.add('active');
-        });
-
-        btnCloseModal.addEventListener('click', () => {
-            modal.classList.remove('active');
-            iframe.src = 'about:blank';
-            log('Iframe modal closed by user.');
         });
 
         // --- 3. Direct Callback Fallback: window.edited_upload(payload) ---

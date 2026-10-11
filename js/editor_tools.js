@@ -1616,26 +1616,37 @@ window.EditorTools = (function () {
   }
 
   function drawArrow(ctx, fromX, fromY, toX, toY, size) {
-    const headLen = Math.max(12, size * 2);
+    const headLen = Math.max(14, size * 2.8);
     const angle = Math.atan2(toY - fromY, toX - fromX);
+    const dist = Math.hypot(toX - fromX, toY - fromY);
+    if (dist < 2) return;
 
+    // Shaft terminates at base of arrowhead so line tip does not poke out
+    const baseDist = Math.min(dist * 0.8, headLen * 0.85);
+    const baseX = toX - baseDist * Math.cos(angle);
+    const baseY = toY - baseDist * Math.sin(angle);
+
+    ctx.save();
     ctx.beginPath();
     ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX, toY);
+    ctx.lineTo(baseX, baseY);
     ctx.stroke();
+
+    // Solid sharp arrowhead
+    const wingAngle = Math.PI / 6; // 30 deg
+    const leftX = toX - headLen * Math.cos(angle - wingAngle);
+    const leftY = toY - headLen * Math.sin(angle - wingAngle);
+    const rightX = toX - headLen * Math.cos(angle + wingAngle);
+    const rightY = toY - headLen * Math.sin(angle + wingAngle);
 
     ctx.beginPath();
     ctx.moveTo(toX, toY);
-    ctx.lineTo(
-      toX - headLen * Math.cos(angle - Math.PI / 6),
-      toY - headLen * Math.sin(angle - Math.PI / 6),
-    );
-    ctx.lineTo(
-      toX - headLen * Math.cos(angle + Math.PI / 6),
-      toY - headLen * Math.sin(angle + Math.PI / 6),
-    );
+    ctx.lineTo(leftX, leftY);
+    ctx.lineTo(baseX, baseY);
+    ctx.lineTo(rightX, rightY);
     ctx.closePath();
     ctx.fill();
+    ctx.restore();
   }
 
   function renderTextOverlay(ctx, { imageToViewport, zoom }) {
@@ -2030,9 +2041,12 @@ window.EditorTools = (function () {
       brushState.startPoint &&
       brushState.currentPoint
     ) {
-      const rad = Math.hypot(
-        brushState.currentPoint.x - brushState.startPoint.x,
-        brushState.currentPoint.y - brushState.startPoint.y,
+      const rad = Math.max(
+        brushState.size * 2,
+        Math.hypot(
+          brushState.currentPoint.x - brushState.startPoint.x,
+          brushState.currentPoint.y - brushState.startPoint.y,
+        ),
       );
       drawStar(
         ctx,
@@ -2041,6 +2055,8 @@ window.EditorTools = (function () {
         5,
         rad,
         rad / 2,
+        true,
+        true,
       );
     }
 
@@ -2052,7 +2068,16 @@ window.EditorTools = (function () {
     pushHistorySnapshot();
   }
 
-  function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+  function drawStar(
+    ctx,
+    cx,
+    cy,
+    spikes,
+    outerRadius,
+    innerRadius,
+    fill = true,
+    stroke = true,
+  ) {
     let rot = (Math.PI / 2) * 3;
     let x = cx;
     let y = cy;
@@ -2073,8 +2098,8 @@ window.EditorTools = (function () {
     }
     ctx.lineTo(cx, cy - outerRadius);
     ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    if (fill) ctx.fill();
+    if (stroke) ctx.stroke();
   }
 
   function handleTextMouseDown(pos) {
@@ -2155,6 +2180,20 @@ window.EditorTools = (function () {
       ctx.ellipse(sx + sw / 2, sy + sh / 2, sw / 2, sh / 2, 0, 0, Math.PI * 2);
       if (shapeState.fillStyle !== "none") ctx.fill();
       ctx.stroke();
+    } else if (shapeState.type === "star") {
+      const cx = sx + sw / 2;
+      const cy = sy + sh / 2;
+      const outerR = Math.max(sw, sh) / 2;
+      drawStar(
+        ctx,
+        cx,
+        cy,
+        5,
+        outerR,
+        outerR / 2,
+        shapeState.fillStyle !== "none",
+        true,
+      );
     }
 
     ctx.restore();
