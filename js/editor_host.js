@@ -96,7 +96,8 @@ window.EditorHost = (function () {
     const headerTitle = document.getElementById("appHeaderTitle");
     if (headerTitle) {
       headerTitle.textContent = title;
-      headerTitle.style.display = "inline-block";
+      headerTitle.title = title;
+      headerTitle.style.display = "block";
     }
   }
 

@@ -65,10 +65,35 @@
 
     <div class="app-container" id="appContainer">
 
-        <!-- === 1. Header & Navigation Tabs === -->
+        <!-- === 1. App Header Row: Title & Actions === -->
         <header class="app-header">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="header-title" id="appHeaderTitle">Image Editor</span>
+            <span class="header-title" id="appHeaderTitle">Image Editor</span>
+
+            <div class="header-actions">
+                <!-- Single Image Upload Action (in Edit view) -->
+                <button class="btn btn-success" id="btnUploadSingle" title="Upload this image" style="display:none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                    </svg>
+                    Upload Image
+                </button>
+                <!-- Batch Upload Action (in Gallery / Upload view) -->
+                <button class="btn btn-success" id="btnUploadDone" title="Export & upload batch">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
+                    </svg>
+                    Upload All
+                </button>
+                <button class="btn btn-icon" id="btnCloseWindow" title="Close" style="display:none; font-size:18px;">
+                    &times;
+                </button>
+            </div>
+        </header>
+
+        <!-- === 2. Mode Navigation Tabs Row with Scroll Overflow Indicators === -->
+        <div class="toolbar-wrapper tabs-toolbar" id="tabsToolbarWrapper">
+            <button class="toolbar-arrow left" id="tabsArrowLeft" aria-label="Scroll left">&#10094;</button>
+            <div class="toolbar-scroll" id="tabsToolbarScroll">
                 <nav class="header-nav">
                     <button class="nav-tab active" id="tabUpload" title="Add More Images">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -93,27 +118,8 @@
                     </button>
                 </nav>
             </div>
-
-            <div class="header-actions">
-                <!-- Single Image Upload Action (in Edit view) -->
-                <button class="btn btn-success" id="btnUploadSingle" title="Upload this image" style="display:none;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                    </svg>
-                    Upload Image
-                </button>
-                <!-- Batch Upload Action (in Gallery / Upload view) -->
-                <button class="btn btn-success" id="btnUploadDone" title="Export & upload batch">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-                    </svg>
-                    Upload All
-                </button>
-                <button class="btn btn-icon" id="btnCloseWindow" title="Close" style="display:none; font-size:18px;">
-                    &times;
-                </button>
-            </div>
-        </header>
+            <button class="toolbar-arrow right" id="tabsArrowRight" aria-label="Scroll right">&#10095;</button>
+        </div>
 
         <!-- === 2. Toolbar 1 (Primary Tools) with Overflow Indicators === -->
         <div class="toolbar-wrapper" id="toolbar1Wrapper">

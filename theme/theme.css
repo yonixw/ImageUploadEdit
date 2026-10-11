@@ -197,13 +197,13 @@ body {
     overflow: hidden;
 }
 
-/* === 1. Header & Navigation Tabs === */
+/* === 1. App Header Row: Title & Actions === */
 .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 48px;
-    min-height: 48px;
+    height: 42px;
+    min-height: 42px;
     padding: 0 12px;
     background: var(--bg-surface);
     backdrop-filter: var(--glass-blur);
@@ -211,21 +211,50 @@ body {
     border-bottom: 1px solid var(--border-color);
     box-shadow: var(--glass-shadow);
     z-index: 30;
+    gap: 12px;
+}
+
+.header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+    display: block;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* === 2. Mode Navigation Tabs Row with Scroll Overflow Indicators === */
+.tabs-toolbar {
+    height: 40px;
+    min-height: 40px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 25;
 }
 
 .header-nav {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
     height: 100%;
 }
 
 .nav-tab {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    height: 34px;
-    padding: 0 14px;
+    height: 30px;
+    padding: 0 12px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: var(--radius-md);
@@ -233,6 +262,8 @@ body {
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: all 0.15s ease;
 }
 
@@ -272,24 +303,6 @@ body {
     border-radius: 9px;
     background-color: var(--accent);
     color: #fff;
-}
-
-.header-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-right: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    display: inline-block;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .btn {

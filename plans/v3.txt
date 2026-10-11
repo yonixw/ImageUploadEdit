@@ -6,4 +6,12 @@ DONE:
     * theme properly applied from URL (?theme= / #theme=) and postMessage INIT action
     * token properly received from URL (?token= / #token=) and postMessage INIT action, returned with image payloads (fixed "Token: None")
 * I want another option for Censor: Like freehand area selection, that will either censor all in or out of the shape - so like "Freehand-In" and "Freehand-Out"
+* Fixed arrow tip color so arrowhead triangle matches chosen stroke color instead of default black
+* Added 4 new themes (light, warm-light, midnight, emerald) alongside dark, dark-orange, and glass
+* Added README.md with AI disclosure (Google Gemini 3.7) and embed guide
+* Added MIT License
+* Fixed canvas transformation leak after rotateCanvas so shapes/brush/text are not displaced after rotating
+* Added willReadFrequently: true to canvas readback contexts to eliminate browser performance warning
+* Added text rotation before burning to canvas (rotation slider, quick rotate buttons, and interactive canvas handle)
+* Split header title to dedicated top row with text-overflow ellipsis, and moved mode tabs (Add more / Gallery / Edit) to second row with scroll overflow arrows
 

@@ -19,6 +19,11 @@ window.EditorApp = (function () {
     bindTabNavigation();
 
     // 3. Setup Toolbar Overflow Scroll Indicators
+    setupToolbarOverflow(
+      "tabsToolbarScroll",
+      "tabsArrowLeft",
+      "tabsArrowRight",
+    );
     setupToolbarOverflow("toolbar1Scroll", "tb1ArrowLeft", "tb1ArrowRight");
     setupToolbarOverflow("toolbar2Scroll", "tb2ArrowLeft", "tb2ArrowRight");
 
