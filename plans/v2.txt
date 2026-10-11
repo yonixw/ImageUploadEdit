@@ -1,17 +1,23 @@
-no token is passed as i see 
-shape star - only once 
-blur and pixelate box-selection doesn't work 
-    also blur selection hangs for a lot... - spin icon?
-no apply&upload per image in list 
-quality has no real preview and no apply...
-draw arrow has the end few pixels back
-max dimension - more option with ratio in name
-    (from avatar, square thumb, etc.)
-Rotate
-    In text - doesnt show - 0 to 360
-    Image rotate also should have free degree (with black/white bg for new bg)
-Apply & Done only in list 
-    The current button should just say (Apply All?) and move to list tab
-Another tool, to center, move the image.. good also after crop.
-    Auto center do happen sometimes, like in "undo"
-    Zoom should still be cross tool option
+* no token is passed in the example... make it random in the example page before evey modal open 
+* shape star - paints only once, until refresh 
+* blur and pixelate box-selection doesn't work on some images 
+    * also blur selection hangs for a lot in that case 
+    * see tests/bad_censur.jpg
+* quality has no preview.. toggle? checkbox?
+    * Quality->max dimension - more option with ratio in name (from avatar, square thumb, etc.)
+        * Need to tell in name + in preview that this is the max "resize" 
+* draw arrow has the end few pixels back from the end of line, looks bad 
+* Rotate
+    * In text - doesnt show - 0 to 360 text input... add also +10, +45 +90 lean buttons, with auto module of 360=>0
+    * Image rotate also should have free degree, not just 90 multiples (with black/white/transp bg for new bg)
+* Another tool, to center, move the image.. good also after crop.
+    * Auto center do happen sometimes, like in "undo"
+    * this should be cross tool helper, like zoom and pan... add it to the status bar? as small buttons? 
+* Apply & Done only in list 
+    There should be:
+    * Apply | Upload in single image.
+    * In list - "Upload all"
+* Redo & Undo should be at the start of the row, not end, will look better imo
+* Modal title is locked to: "Image Editor Modal",
+    * Move it to the top row, doesn't need its own
+    * Let the caller set it with param.
