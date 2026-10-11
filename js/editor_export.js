@@ -384,6 +384,23 @@ window.EditorExport = (function () {
           `Image "${finalName}" uploaded successfully`,
         );
       }
+
+      // Remove the exported image from the queue and switch to gallery tab
+      const uploadedItemId = item.id;
+      if (
+        window.EditorQueue &&
+        typeof window.EditorQueue.removeItem === "function"
+      ) {
+        window.EditorQueue.removeItem(uploadedItemId);
+      }
+      if (
+        window.EditorApp &&
+        typeof window.EditorApp.switchTab === "function"
+      ) {
+        if (window.EditorQueue && window.EditorQueue.items.length > 0) {
+          window.EditorApp.switchTab("gallery");
+        }
+      }
     } catch (err) {
       console.error("Error exporting single item:", item.name, err);
       window.EditorQueue.updateItemStatus(item.id, "ERROR", 0);
