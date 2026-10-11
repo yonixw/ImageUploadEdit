@@ -5,23 +5,92 @@
  */
 
 window.EditorHost = (function () {
-  const urlParams = new URLSearchParams(window.location.search);
+  function getUrlParameter(key) {
+    try {
+      if (window.location && window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has(key)) return params.get(key);
+      }
+    } catch (e) {}
+
+    try {
+      if (window.location && window.location.hash) {
+        const hash = window.location.hash.replace(/^#[?]?/, "");
+        const params = new URLSearchParams(hash);
+        if (params.has(key)) return params.get(key);
+      }
+    } catch (e) {}
+
+    try {
+      if (window.frameElement) {
+        const src =
+          window.frameElement.getAttribute("src") ||
+          window.frameElement.src ||
+          "";
+        const qIdx = src.indexOf("?");
+        if (qIdx !== -1) {
+          const params = new URLSearchParams(src.substring(qIdx));
+          if (params.has(key)) return params.get(key);
+        }
+        const hIdx = src.indexOf("#");
+        if (hIdx !== -1) {
+          const hash = src.substring(hIdx + 1).replace(/^[?]?/, "");
+          const params = new URLSearchParams(hash);
+          if (params.has(key)) return params.get(key);
+        }
+      }
+    } catch (e) {}
+
+    try {
+      const href = window.location.href || document.URL || "";
+      const qIdx = href.indexOf("?");
+      if (qIdx !== -1) {
+        const endIdx = href.indexOf("#");
+        const qStr =
+          endIdx !== -1 ? href.substring(qIdx, endIdx) : href.substring(qIdx);
+        const params = new URLSearchParams(qStr);
+        if (params.has(key)) return params.get(key);
+      }
+      const hIdx = href.indexOf("#");
+      if (hIdx !== -1) {
+        const hash = href.substring(hIdx + 1).replace(/^[?]?/, "");
+        const params = new URLSearchParams(hash);
+        if (params.has(key)) return params.get(key);
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+  const rawTheme = (getUrlParameter("theme") || "dark").toLowerCase();
+  const validThemes = ["dark", "glass", "dark-orange"];
 
   const config = {
-    token: urlParams.get("token") || "",
-    title: urlParams.get("title") || "",
-    theme: (urlParams.get("theme") || "dark").toLowerCase(),
+    token: getUrlParameter("token") || "",
+    title: getUrlParameter("title") || "",
+    theme: validThemes.includes(rawTheme) ? rawTheme : "dark",
     autoClose:
-      urlParams.get("autoClose") === "true" ||
-      urlParams.get("autoClose") === "1",
-    format: (urlParams.get("format") || "webp").toLowerCase(),
-    maxSize: parseInt(urlParams.get("maxSize"), 10) || 0,
-    quality: parseFloat(urlParams.get("quality")) || 0.85,
+      getUrlParameter("autoClose") === "true" ||
+      getUrlParameter("autoClose") === "1",
+    format: (getUrlParameter("format") || "webp").toLowerCase(),
+    maxSize: parseInt(getUrlParameter("maxSize"), 10) || 0,
+    quality: parseFloat(getUrlParameter("quality")) || 0.85,
   };
 
   const isPopup = Boolean(window.opener && window.opener !== window);
   const isIframe = Boolean(window.parent && window.parent !== window);
   const isEmbedded = isPopup || isIframe;
+
+  function setTitle(title) {
+    if (!title) return;
+    config.title = title;
+    document.title = title;
+    const headerTitle = document.getElementById("appHeaderTitle");
+    if (headerTitle) {
+      headerTitle.textContent = title;
+      headerTitle.style.display = "inline-block";
+    }
+  }
 
   function init() {
     // Apply requested theme stylesheet
@@ -29,12 +98,7 @@ window.EditorHost = (function () {
 
     // Set custom title if provided
     if (config.title) {
-      document.title = config.title;
-      const headerTitle = document.getElementById("appHeaderTitle");
-      if (headerTitle) {
-        headerTitle.textContent = config.title;
-        headerTitle.style.display = "inline-block";
-      }
+      setTitle(config.title);
     }
 
     // Show close button if opened in popup/modal
@@ -88,10 +152,19 @@ window.EditorHost = (function () {
     if (!data || typeof data !== "object") return;
 
     if (data.action === "INIT") {
-      if (data.token) config.token = data.token;
+      const newToken = data.token || (data.config && data.config.token);
+      if (newToken) {
+        config.token = newToken;
+        if (window.EditorQueue && Array.isArray(window.EditorQueue.items)) {
+          window.EditorQueue.items.forEach((item) => {
+            if (!item.token) item.token = newToken;
+          });
+        }
+      }
       if (data.config) {
         Object.assign(config, data.config);
         if (data.config.theme) setTheme(data.config.theme);
+        if (data.config.title) setTitle(data.config.title);
       }
     } else if (data.action === "SET_THEME") {
       if (data.theme) setTheme(data.theme);
@@ -110,11 +183,7 @@ window.EditorHost = (function () {
   }
 
   function getToken() {
-    return (
-      config.token ||
-      new URLSearchParams(window.location.search).get("token") ||
-      ""
-    );
+    return config.token || getUrlParameter("token") || "";
   }
 
   /**
@@ -259,6 +328,8 @@ window.EditorHost = (function () {
     isEmbedded,
     init,
     getToken,
+    getUrlParameter,
+    setTitle,
     setTheme,
     sendHandshake,
     sendImageItem,

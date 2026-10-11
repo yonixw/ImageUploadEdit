@@ -64,7 +64,7 @@ window.EditorTools = (function () {
   };
 
   const shapeState = {
-    type: "rect", // 'rect' | 'rounded-rect' | 'circle'
+    type: "rect", // 'rect' | 'rounded-rect' | 'circle' | 'line' | 'arrow' | 'star'
     strokeWidth: 4,
     strokeStyle: "solid", // 'solid' | 'dashed'
     fillStyle: "none", // 'none' | 'solid' | 'semi'
@@ -1461,6 +1461,9 @@ window.EditorTools = (function () {
       { id: "rect", label: "Rectangle" },
       { id: "rounded-rect", label: "Rounded Rect" },
       { id: "circle", label: "Circle / Ellipse" },
+      { id: "line", label: "Line" },
+      { id: "arrow", label: "Arrow" },
+      { id: "star", label: "Star" },
     ];
 
     types.forEach((t) => {
@@ -1825,6 +1828,34 @@ window.EditorTools = (function () {
       ctx.ellipse(sx + sw / 2, sy + sh / 2, sw / 2, sh / 2, 0, 0, Math.PI * 2);
       if (shapeState.fillStyle !== "none") ctx.fill();
       ctx.stroke();
+    } else if (shapeState.type === "line") {
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    } else if (shapeState.type === "arrow") {
+      drawArrow(
+        ctx,
+        p1.x,
+        p1.y,
+        p2.x,
+        p2.y,
+        Math.max(1, shapeState.strokeWidth * zoom),
+      );
+    } else if (shapeState.type === "star") {
+      const cx = sx + sw / 2;
+      const cy = sy + sh / 2;
+      const outerR = Math.max(sw, sh) / 2;
+      drawStar(
+        ctx,
+        cx,
+        cy,
+        5,
+        outerR,
+        outerR / 2,
+        shapeState.fillStyle !== "none",
+        true,
+      );
     }
 
     ctx.restore();

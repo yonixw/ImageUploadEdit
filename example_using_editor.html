@@ -373,7 +373,37 @@
             const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
             const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
 
-            return `editor.html?token=${token}&title=${title}&theme=${theme}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+            const queryString = `token=${token}&title=${title}&theme=${theme}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+            // Append both search query (?...) and hash fragment (#...) to guarantee compatibility even in file:// or sandboxed iframes
+            return `editor.html?${queryString}#${queryString}`;
+        }
+
+        function sendInitToEditor(targetWindow) {
+            if (!targetWindow) return;
+            const tokenVal = document.getElementById('cfgToken').value.trim();
+            const themeVal = document.getElementById('cfgTheme').value;
+            const titleVal = document.getElementById('cfgTitle').value.trim() || 'Image Editor';
+            const formatVal = document.getElementById('cfgFormat').value;
+            const maxSizeVal = parseInt(document.getElementById('cfgMaxSize').value, 10) || 0;
+            const qualityVal = parseFloat(document.getElementById('cfgQuality').value) || 0.85;
+
+            try {
+                targetWindow.postMessage({
+                    action: 'INIT',
+                    token: tokenVal,
+                    config: {
+                        token: tokenVal,
+                        theme: themeVal,
+                        title: titleVal,
+                        format: formatVal,
+                        maxSize: maxSizeVal,
+                        quality: qualityVal,
+                        autoClose: true
+                    }
+                }, '*');
+            } catch (e) {
+                console.warn('Could not postMessage INIT to editor window:', e);
+            }
         }
 
         // --- 1. Popup Window Invocation ---
@@ -383,11 +413,20 @@
             const url = buildEditorUrl();
             log(`Opening popup window: ${url}`);
             popupWindow = window.open(url, 'ImageEditorHostPopup', 'width=1150,height=850,resizable=yes,scrollbars=no');
+            if (popupWindow) {
+                setTimeout(() => sendInitToEditor(popupWindow), 300);
+            }
         });
 
         // --- 2. Iframe Modal Invocation ---
         const modal = document.getElementById('modalBackdrop');
         const iframe = document.getElementById('editorIframe');
+
+        iframe.onload = () => {
+            if (iframe.contentWindow && iframe.src && iframe.src !== 'about:blank') {
+                sendInitToEditor(iframe.contentWindow);
+            }
+        };
 
         document.getElementById('btnOpenModal').addEventListener('click', () => {
             // Generate a fresh token for each session
@@ -410,7 +449,9 @@
             if (!data || typeof data !== 'object') return;
 
             if (data.type === 'EDITOR_READY') {
-                log(`Handshake received: EDITOR_READY (token: ${data.token})`);
+                log(`Handshake received: EDITOR_READY (token: ${data.token || 'handshake'})`);
+                const targetWin = event.source || (iframe ? iframe.contentWindow : null) || popupWindow;
+                sendInitToEditor(targetWin);
             } else if (data.type === 'IMAGE_UPLOAD_ITEM') {
                 const payload = data.payload;
                 log(`postMessage IMAGE_UPLOAD_ITEM: ${payload.name} (${payload.width}x${payload.height}, ${formatBytes(payload.fileSize)})`);

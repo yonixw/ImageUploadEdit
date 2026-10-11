@@ -1,10 +1,9 @@
 TODO:
-* lines / arrow / star was supposed to move from "brush" to "shapes" but now its gone
 
-2 problems that caused because the inside of iframe js doesn't see the iframe url ??? please fix 
-    * theme still not working... 
-    * token still not passed. I see "Token: None" in the example page...
-    
 DONE:
+* lines / arrow / star moved from "brush" to "shapes" (restored in shapes subtoolbar and interactive drag overlay)
+* fixed inside of iframe / popup URL parameter handling (query params, hash params, frameElement fallback, and host postMessage INIT handshake):
+    * theme properly applied from URL (?theme= / #theme=) and postMessage INIT action
+    * token properly received from URL (?token= / #token=) and postMessage INIT action, returned with image payloads (fixed "Token: None")
 * I want another option for Censor: Like freehand area selection, that will either censor all in or out of the shape - so like "Freehand-In" and "Freehand-Out"
 

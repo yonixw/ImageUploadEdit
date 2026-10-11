@@ -6,10 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Image Uploader & Editor</title>
     <script>
-        var params = new URLSearchParams(window.location.search);
-        var theme = (params.get('theme') || 'dark').toLowerCase();
-        console.log({ theme });
-        document.documentElement.setAttribute('data-theme', theme);
+        (function () {
+            function getParam(key) {
+                try {
+                    if (window.location && window.location.search) {
+                        var p = new URLSearchParams(window.location.search);
+                        if (p.has(key)) return p.get(key);
+                    }
+                } catch (e) { }
+                try {
+                    if (window.location && window.location.hash) {
+                        var p = new URLSearchParams(window.location.hash.replace(/^#[?]?/, ''));
+                        if (p.has(key)) return p.get(key);
+                    }
+                } catch (e) { }
+                try {
+                    if (window.frameElement) {
+                        var src = window.frameElement.getAttribute('src') || window.frameElement.src || '';
+                        var q = src.indexOf('?');
+                        if (q !== -1) {
+                            var p = new URLSearchParams(src.substring(q));
+                            if (p.has(key)) return p.get(key);
+                        }
+                        var h = src.indexOf('#');
+                        if (h !== -1) {
+                            var p = new URLSearchParams(src.substring(h + 1).replace(/^[?]?/, ''));
+                            if (p.has(key)) return p.get(key);
+                        }
+                    }
+                } catch (e) { }
+                try {
+                    var u = window.location.href || document.URL || '';
+                    var q = u.indexOf('?');
+                    if (q !== -1) {
+                        var end = u.indexOf('#');
+                        var s = end !== -1 ? u.substring(q, end) : u.substring(q);
+                        var p = new URLSearchParams(s);
+                        if (p.has(key)) return p.get(key);
+                    }
+                    var h = u.indexOf('#');
+                    if (h !== -1) {
+                        var p = new URLSearchParams(u.substring(h + 1).replace(/^[?]?/, ''));
+                        if (p.has(key)) return p.get(key);
+                    }
+                } catch (e) { }
+                return null;
+            }
+            var rawTheme = (getParam('theme') || 'dark').toLowerCase();
+            var validThemes = ['dark', 'glass', 'dark-orange'];
+            var theme = validThemes.indexOf(rawTheme) !== -1 ? rawTheme : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
     </script>
     <link rel="stylesheet" href="theme/theme.css">
 </head>

@@ -359,7 +359,6 @@ window.EditorExport = (function () {
         (window.EditorHost && typeof window.EditorHost.getToken === "function"
           ? window.EditorHost.getToken()
           : "") ||
-        new URLSearchParams(window.location.search).get("token") ||
         "";
 
       const payload = {
@@ -446,7 +445,6 @@ window.EditorExport = (function () {
           (window.EditorHost && typeof window.EditorHost.getToken === "function"
             ? window.EditorHost.getToken()
             : "") ||
-          new URLSearchParams(window.location.search).get("token") ||
           "";
 
         const payload = {
