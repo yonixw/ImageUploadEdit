@@ -209,7 +209,7 @@ window.EditorHost = (function () {
       payload: payload,
     };
 
-    if (isPopup && window.opener) {
+    if (!delivered && isPopup && window.opener) {
       try {
         window.opener.postMessage(messagePayload, "*");
         delivered = true;
@@ -218,7 +218,7 @@ window.EditorHost = (function () {
       }
     }
 
-    if (isIframe && window.parent) {
+    if (!delivered && isIframe && window.parent) {
       try {
         window.parent.postMessage(messagePayload, "*");
         delivered = true;
@@ -229,26 +229,28 @@ window.EditorHost = (function () {
 
     // 1. Check direct JavaScript callbacks
     if (isPopup && window.opener) {
-      if (typeof window.opener.edited_upload === "function") {
-        try {
+      try {
+        if (!delivered && typeof window.opener.edited_upload === "function") {
           window.opener.edited_upload(payload);
           delivered = true;
-        } catch (e) {
-          console.warn("Error invoking opener.edited_upload:", e);
         }
-      } else if (typeof window.opener.upload === "function") {
-        try {
+      } catch (e) {
+        console.warn("Error invoking opener.edited_upload:", e);
+      }
+
+      try {
+        if (!delivered && typeof window.opener.upload === "function") {
           window.opener.upload(payload);
           delivered = true;
-        } catch (e) {
-          console.warn("Error invoking opener.upload:", e);
         }
+      } catch (e) {
+        console.warn("Error invoking opener.upload:", e);
       }
     }
 
     if (isIframe && window.parent) {
       try {
-        if (typeof window.parent.edited_upload === "function") {
+        if (!delivered && typeof window.parent.edited_upload === "function") {
           window.parent.edited_upload(payload);
           delivered = true;
         }
@@ -257,7 +259,7 @@ window.EditorHost = (function () {
       }
 
       try {
-        if (typeof window.parent.upload === "function") {
+        if (!delivered && typeof window.parent.upload === "function") {
           window.parent.upload(payload);
           delivered = true;
         }
@@ -266,7 +268,7 @@ window.EditorHost = (function () {
       }
     }
 
-    if (typeof window.edited_upload === "function") {
+    if (!delivered && typeof window.edited_upload === "function") {
       try {
         window.edited_upload(payload);
         delivered = true;
