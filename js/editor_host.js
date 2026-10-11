@@ -63,7 +63,15 @@ window.EditorHost = (function () {
   }
 
   const rawTheme = (getUrlParameter("theme") || "dark").toLowerCase();
-  const validThemes = ["dark", "glass", "dark-orange"];
+  const validThemes = [
+    "dark",
+    "glass",
+    "dark-orange",
+    "light",
+    "warm-light",
+    "midnight",
+    "emerald",
+  ];
 
   const config = {
     token: getUrlParameter("token") || "",
@@ -312,7 +320,15 @@ window.EditorHost = (function () {
   }
 
   function setTheme(themeName) {
-    const validThemes = ["dark", "glass", "dark-orange"];
+    const validThemes = [
+      "dark",
+      "glass",
+      "dark-orange",
+      "light",
+      "warm-light",
+      "midnight",
+      "emerald",
+    ];
     const theme = validThemes.includes(themeName) ? themeName : "dark";
     config.theme = theme;
     document.documentElement.setAttribute("data-theme", theme);

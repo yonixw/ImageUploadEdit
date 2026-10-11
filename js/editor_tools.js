@@ -662,7 +662,7 @@ window.EditorTools = (function () {
     angleInput.style.height = "26px";
     angleInput.style.background = "var(--bg-surface)";
     angleInput.style.border = "1px solid var(--border-color)";
-    angleInput.style.color = "#fff";
+    angleInput.style.color = "var(--text-main)";
     angleInput.style.borderRadius = "4px";
     angleInput.style.padding = "0 4px";
     angleInput.style.fontSize = "12px";
@@ -1739,6 +1739,7 @@ window.EditorTools = (function () {
     ctx.lineTo(baseX, baseY);
     ctx.lineTo(rightX, rightY);
     ctx.closePath();
+    ctx.fillStyle = ctx.strokeStyle;
     ctx.fill();
     ctx.restore();
   }
