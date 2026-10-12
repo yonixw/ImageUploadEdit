@@ -413,6 +413,9 @@ html:lang(ja) body {
 }
 
 .toolbar-arrow {
+    /* Arrows are physically positioned (left/right); keep LTR so the bidi-mirrored
+       glyphs (U+276E/U+276F) aren't flipped in RTL languages */
+    direction: ltr;
     position: absolute;
     top: 0;
     bottom: 0;
