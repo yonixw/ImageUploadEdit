@@ -6,7 +6,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 
 
 
-![Sceenshot](./history/Sceen1.png)
+![Screenshot](./history/Sceen1.png)
 
 
 
