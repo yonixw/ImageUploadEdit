@@ -48,7 +48,7 @@ window.EditorTools = (function () {
   };
 
   const textState = {
-    text: "Double click or edit text",
+    text: t("text.default"),
     font: "sans-serif",
     size: 36,
     bold: false,
@@ -82,6 +82,19 @@ window.EditorTools = (function () {
     if (window.EditorCanvas) {
       window.EditorCanvas.setOverlayRenderer(renderToolOverlays);
     }
+
+    window.addEventListener("editor:languagechange", onLanguageChange);
+  }
+
+  // Rebuild translated dynamic UI after a runtime language switch
+  function onLanguageChange(e) {
+    const prev = e && e.detail ? e.detail.prev : null;
+    // Swap the placeholder text only if the user hasn't edited it
+    if (prev && textState.text === window.EditorI18n.tFor(prev, "text.default")) {
+      textState.text = t("text.default");
+    }
+    populateSubToolbar();
+    if (window.EditorCanvas) window.EditorCanvas.render();
   }
 
   // --- 1. Color Picker Module ---
@@ -453,8 +466,10 @@ window.EditorTools = (function () {
     tb2Scroll.innerHTML = "";
 
     if (!activeTool) {
-      tb2Scroll.innerHTML =
-        '<span class="tool-label">Select a tool above to begin editing</span>';
+      const hint = document.createElement("span");
+      hint.className = "tool-label";
+      hint.textContent = t("tools.selectHint");
+      tb2Scroll.appendChild(hint);
       return;
     }
 
@@ -492,8 +507,8 @@ window.EditorTools = (function () {
   // A. Crop Sub Toolbar
   function buildCropSubToolbar(container) {
     const ratios = [
-      { id: "free", label: "Free" },
-      { id: "1:1", label: "1:1 Square" },
+      { id: "free", label: t("crop.free") },
+      { id: "1:1", label: t("crop.square") },
       { id: "4:3", label: "4:3" },
       { id: "16:9", label: "16:9" },
       { id: "3:2", label: "3:2" },
@@ -519,7 +534,7 @@ window.EditorTools = (function () {
     // Avatar Circle Mask toggle (for 1:1)
     const avatarBtn = document.createElement("button");
     avatarBtn.className = `tool-btn ${cropState.isAvatarMask ? "active" : ""}`;
-    avatarBtn.textContent = "Avatar Circle";
+    avatarBtn.textContent = t("crop.avatar");
     avatarBtn.addEventListener("click", () => {
       cropState.isAvatarMask = !cropState.isAvatarMask;
       if (cropState.isAvatarMask) cropState.ratio = "1:1";
@@ -537,7 +552,7 @@ window.EditorTools = (function () {
     applyBtn.className = "btn btn-primary";
     applyBtn.style.height = "28px";
     applyBtn.style.fontSize = "12px";
-    applyBtn.textContent = "Apply Crop";
+    applyBtn.textContent = t("crop.apply");
     applyBtn.addEventListener("click", executeCrop);
     container.appendChild(applyBtn);
 
@@ -545,7 +560,7 @@ window.EditorTools = (function () {
     cancelBtn.className = "btn";
     cancelBtn.style.height = "28px";
     cancelBtn.style.fontSize = "12px";
-    cancelBtn.textContent = "Cancel";
+    cancelBtn.textContent = t("common.cancel");
     cancelBtn.addEventListener("click", () => selectTool(null));
     container.appendChild(cancelBtn);
   }
@@ -634,11 +649,11 @@ window.EditorTools = (function () {
 
   function buildTransformSubToolbar(container) {
     const actions = [
-      { label: "90° CW", fn: () => rotateCanvas(90, transformState.bgColor) },
-      { label: "90° CCW", fn: () => rotateCanvas(-90, transformState.bgColor) },
+      { label: t("transform.cw"), fn: () => rotateCanvas(90, transformState.bgColor) },
+      { label: t("transform.ccw"), fn: () => rotateCanvas(-90, transformState.bgColor) },
       { label: "180°", fn: () => rotateCanvas(180, transformState.bgColor) },
-      { label: "Flip Horiz", fn: () => flipCanvas(true, false) },
-      { label: "Flip Vert", fn: () => flipCanvas(false, true) },
+      { label: t("transform.flipH"), fn: () => flipCanvas(true, false) },
+      { label: t("transform.flipV"), fn: () => flipCanvas(false, true) },
     ];
 
     actions.forEach((a) => {
@@ -656,7 +671,7 @@ window.EditorTools = (function () {
     // Free degree rotation controls
     const rotLabel = document.createElement("span");
     rotLabel.className = "tool-label";
-    rotLabel.textContent = "Free Rotate:";
+    rotLabel.textContent = t("transform.freeRotate");
     container.appendChild(rotLabel);
 
     const angleInput = document.createElement("input");
@@ -673,6 +688,7 @@ window.EditorTools = (function () {
     angleInput.style.padding = "0 4px";
     angleInput.style.fontSize = "12px";
     angleInput.style.textAlign = "center";
+    angleInput.dir = "ltr";
     angleInput.addEventListener("change", (e) => {
       transformState.customAngle = parseFloat(e.target.value) || 0;
     });
@@ -681,7 +697,7 @@ window.EditorTools = (function () {
     const degUnit = document.createElement("span");
     degUnit.className = "tool-label";
     degUnit.textContent = "°";
-    degUnit.style.marginRight = "2px";
+    degUnit.style.marginInlineEnd = "2px";
     container.appendChild(degUnit);
 
     // Quick lean / nudge buttons
@@ -705,15 +721,15 @@ window.EditorTools = (function () {
     // Background color selector for newly exposed canvas corners
     const bgLabel = document.createElement("span");
     bgLabel.className = "tool-label";
-    bgLabel.textContent = "BG:";
+    bgLabel.textContent = t("transform.bg");
     container.appendChild(bgLabel);
 
     const bgSelect = document.createElement("select");
     bgSelect.className = "tool-select";
     [
-      { id: "transparent", label: "Transparent" },
-      { id: "#ffffff", label: "White" },
-      { id: "#000000", label: "Black" },
+      { id: "transparent", label: t("transform.bg.transparent") },
+      { id: "#ffffff", label: t("transform.bg.white") },
+      { id: "#000000", label: t("transform.bg.black") },
     ].forEach((opt) => {
       const o = document.createElement("option");
       o.value = opt.id;
@@ -730,7 +746,7 @@ window.EditorTools = (function () {
     applyRotBtn.className = "btn btn-primary";
     applyRotBtn.style.height = "26px";
     applyRotBtn.style.fontSize = "12px";
-    applyRotBtn.textContent = "Apply Rotate";
+    applyRotBtn.textContent = t("transform.apply");
     applyRotBtn.addEventListener("click", () => {
       if (transformState.customAngle !== 0) {
         rotateCanvas(transformState.customAngle, transformState.bgColor);
@@ -799,11 +815,11 @@ window.EditorTools = (function () {
   // C. Filter Sub Toolbar
   function buildFilterSubToolbar(container) {
     const presets = [
-      { id: "none", label: "Normal" },
-      { id: "grayscale", label: "Grayscale" },
-      { id: "bw", label: "B & W" },
-      { id: "sepia", label: "Sepia" },
-      { id: "invert", label: "Invert" },
+      { id: "none", label: t("filter.normal") },
+      { id: "grayscale", label: t("filter.grayscale") },
+      { id: "bw", label: t("filter.bw") },
+      { id: "sepia", label: t("filter.sepia") },
+      { id: "invert", label: t("filter.invert") },
     ];
 
     presets.forEach((p) => {
@@ -825,7 +841,7 @@ window.EditorTools = (function () {
     // Brightness Slider
     const bSpan = document.createElement("span");
     bSpan.className = "tool-label";
-    bSpan.textContent = "Bright:";
+    bSpan.textContent = t("filter.brightness");
     container.appendChild(bSpan);
 
     const bInput = document.createElement("input");
@@ -843,7 +859,7 @@ window.EditorTools = (function () {
     // Contrast Slider
     const cSpan = document.createElement("span");
     cSpan.className = "tool-label";
-    cSpan.textContent = "Contrast:";
+    cSpan.textContent = t("filter.contrast");
     container.appendChild(cSpan);
 
     const cInput = document.createElement("input");
@@ -861,7 +877,7 @@ window.EditorTools = (function () {
     // Saturation Slider
     const sSpan = document.createElement("span");
     sSpan.className = "tool-label";
-    sSpan.textContent = "Sat:";
+    sSpan.textContent = t("filter.saturation");
     container.appendChild(sSpan);
 
     const sInput = document.createElement("input");
@@ -884,7 +900,7 @@ window.EditorTools = (function () {
     applyBtn.className = "btn btn-primary";
     applyBtn.style.height = "28px";
     applyBtn.style.fontSize = "12px";
-    applyBtn.textContent = "Apply Filters";
+    applyBtn.textContent = t("filter.apply");
     applyBtn.addEventListener("click", commitFilterChanges);
     container.appendChild(applyBtn);
 
@@ -892,7 +908,7 @@ window.EditorTools = (function () {
     resetBtn.className = "btn";
     resetBtn.style.height = "28px";
     resetBtn.style.fontSize = "12px";
-    resetBtn.textContent = "Reset";
+    resetBtn.textContent = t("common.reset");
     resetBtn.addEventListener("click", resetFilters);
     container.appendChild(resetBtn);
   }
@@ -1005,16 +1021,16 @@ window.EditorTools = (function () {
   // D. Censor Sub Toolbar (Blur & Pixelate)
   function buildCensorSubToolbar(container) {
     const types = [
-      { id: "pixelate", label: "Pixelate" },
-      { id: "blur", label: "Blur" },
+      { id: "pixelate", label: t("censor.pixelate") },
+      { id: "blur", label: t("censor.blur") },
     ];
 
-    types.forEach((t) => {
+    types.forEach((type) => {
       const btn = document.createElement("button");
-      btn.className = `tool-btn ${censorState.type === t.id ? "active" : ""}`;
-      btn.textContent = t.label;
+      btn.className = `tool-btn ${censorState.type === type.id ? "active" : ""}`;
+      btn.textContent = type.label;
       btn.addEventListener("click", () => {
-        censorState.type = t.id;
+        censorState.type = type.id;
         populateSubToolbar();
       });
       container.appendChild(btn);
@@ -1025,10 +1041,10 @@ window.EditorTools = (function () {
     container.appendChild(divider);
 
     const modes = [
-      { id: "box", label: "Box Selection" },
-      { id: "brush", label: "Brush" },
-      { id: "freehand-in", label: "Freehand-In" },
-      { id: "freehand-out", label: "Freehand-Out" },
+      { id: "box", label: t("censor.box") },
+      { id: "brush", label: t("censor.brush") },
+      { id: "freehand-in", label: t("censor.freehandIn") },
+      { id: "freehand-out", label: t("censor.freehandOut") },
     ];
 
     modes.forEach((m) => {
@@ -1048,7 +1064,7 @@ window.EditorTools = (function () {
 
     const rSpan = document.createElement("span");
     rSpan.className = "tool-label";
-    rSpan.textContent = "Intensity / Radius:";
+    rSpan.textContent = t("censor.radius");
     container.appendChild(rSpan);
 
     const rInput = document.createElement("input");
@@ -1295,7 +1311,7 @@ window.EditorTools = (function () {
     colorBtn.style.width = "24px";
     colorBtn.style.height = "24px";
     colorBtn.style.borderRadius = "50%";
-    colorBtn.title = "Change Color & Opacity";
+    colorBtn.title = t("brush.color.tooltip");
     colorBtn.addEventListener("click", () => toggleColorPicker(colorBtn));
     container.appendChild(colorBtn);
 
@@ -1306,7 +1322,7 @@ window.EditorTools = (function () {
     // Size Slider
     const sizeSpan = document.createElement("span");
     sizeSpan.className = "tool-label";
-    sizeSpan.textContent = "Size:";
+    sizeSpan.textContent = t("common.size");
     container.appendChild(sizeSpan);
 
     const sizeInput = document.createElement("input");
@@ -1381,7 +1397,7 @@ window.EditorTools = (function () {
     colorBtn.style.width = "24px";
     colorBtn.style.height = "24px";
     colorBtn.style.borderRadius = "50%";
-    colorBtn.title = "Text Color";
+    colorBtn.title = t("text.color.tooltip");
     colorBtn.addEventListener("click", () => toggleColorPicker(colorBtn));
     container.appendChild(colorBtn);
 
@@ -1389,6 +1405,7 @@ window.EditorTools = (function () {
     const boldBtn = document.createElement("button");
     boldBtn.className = `tool-btn ${textState.bold ? "active" : ""}`;
     boldBtn.textContent = "B";
+    boldBtn.title = t("text.bold.tooltip");
     boldBtn.style.fontWeight = "bold";
     boldBtn.addEventListener("click", () => {
       textState.bold = !textState.bold;
@@ -1400,6 +1417,7 @@ window.EditorTools = (function () {
     const italicBtn = document.createElement("button");
     italicBtn.className = `tool-btn ${textState.italic ? "active" : ""}`;
     italicBtn.textContent = "I";
+    italicBtn.title = t("text.italic.tooltip");
     italicBtn.style.fontStyle = "italic";
     italicBtn.addEventListener("click", () => {
       textState.italic = !textState.italic;
@@ -1411,7 +1429,7 @@ window.EditorTools = (function () {
     // Fill Plate Badge Toggle
     const bgPlateBtn = document.createElement("button");
     bgPlateBtn.className = `tool-btn ${textState.fillBg ? "active" : ""}`;
-    bgPlateBtn.textContent = "Badge BG";
+    bgPlateBtn.textContent = t("text.badge");
     bgPlateBtn.addEventListener("click", () => {
       textState.fillBg = !textState.fillBg;
       populateSubToolbar();
@@ -1427,7 +1445,7 @@ window.EditorTools = (function () {
     const rotLabel = document.createElement("span");
     rotLabel.id = "textRotLabel";
     rotLabel.className = "tool-label";
-    rotLabel.textContent = `Rotate:`;
+    rotLabel.textContent = t("text.rotate");
     container.appendChild(rotLabel);
 
     const rotSlider = document.createElement("input");
@@ -1438,7 +1456,7 @@ window.EditorTools = (function () {
     rotSlider.value = textState.rotation;
     rotSlider.className = "tool-input-slider";
     rotSlider.style.width = "90px";
-    rotSlider.title = "Rotate Text (0° to 360°)";
+    rotSlider.title = t("text.rotate.tooltip");
     rotSlider.addEventListener("input", (e) => {
       textState.rotation = parseInt(e.target.value, 10);
       if (window.EditorCanvas) window.EditorCanvas.render();
@@ -1447,7 +1465,7 @@ window.EditorTools = (function () {
 
     const rotMinusBtn = document.createElement("button");
     rotMinusBtn.className = "tool-btn";
-    rotMinusBtn.title = "Rotate -45°";
+    rotMinusBtn.title = t("text.rotateMinus.tooltip");
     rotMinusBtn.textContent = "⟲ -45°";
     rotMinusBtn.style.fontSize = "11px";
     rotMinusBtn.addEventListener("click", () => {
@@ -1459,7 +1477,7 @@ window.EditorTools = (function () {
 
     const rotPlusBtn = document.createElement("button");
     rotPlusBtn.className = "tool-btn";
-    rotPlusBtn.title = "Rotate +45°";
+    rotPlusBtn.title = t("text.rotatePlus.tooltip");
     rotPlusBtn.textContent = "⟳ +45°";
     rotPlusBtn.style.fontSize = "11px";
     rotPlusBtn.addEventListener("click", () => {
@@ -1471,7 +1489,7 @@ window.EditorTools = (function () {
 
     const rotResetBtn = document.createElement("button");
     rotResetBtn.className = "tool-btn";
-    rotResetBtn.title = "Reset Rotation to 0°";
+    rotResetBtn.title = t("text.rotateReset.tooltip");
     rotResetBtn.textContent = "0°";
     rotResetBtn.style.fontSize = "11px";
     rotResetBtn.addEventListener("click", () => {
@@ -1490,7 +1508,7 @@ window.EditorTools = (function () {
     burnBtn.className = "btn btn-primary";
     burnBtn.style.height = "28px";
     burnBtn.style.fontSize = "12px";
-    burnBtn.textContent = "Burn Text";
+    burnBtn.textContent = t("text.burn");
     burnBtn.addEventListener("click", burnTextToCanvas);
     container.appendChild(burnBtn);
   }
@@ -1541,20 +1559,20 @@ window.EditorTools = (function () {
   // G. Shapes Sub Toolbar
   function buildShapesSubToolbar(container) {
     const types = [
-      { id: "rect", label: "Rectangle" },
-      { id: "rounded-rect", label: "Rounded Rect" },
-      { id: "circle", label: "Circle / Ellipse" },
-      { id: "line", label: "Line" },
-      { id: "arrow", label: "Arrow" },
-      { id: "star", label: "Star" },
+      { id: "rect", label: t("shapes.rect") },
+      { id: "rounded-rect", label: t("shapes.roundedRect") },
+      { id: "circle", label: t("shapes.circle") },
+      { id: "line", label: t("shapes.line") },
+      { id: "arrow", label: t("shapes.arrow") },
+      { id: "star", label: t("shapes.star") },
     ];
 
-    types.forEach((t) => {
+    types.forEach((type) => {
       const btn = document.createElement("button");
-      btn.className = `tool-btn ${shapeState.type === t.id ? "active" : ""}`;
-      btn.textContent = t.label;
+      btn.className = `tool-btn ${shapeState.type === type.id ? "active" : ""}`;
+      btn.textContent = type.label;
       btn.addEventListener("click", () => {
-        shapeState.type = t.id;
+        shapeState.type = type.id;
         populateSubToolbar();
       });
       container.appendChild(btn);
@@ -1573,14 +1591,14 @@ window.EditorTools = (function () {
     colorBtn.style.width = "24px";
     colorBtn.style.height = "24px";
     colorBtn.style.borderRadius = "50%";
-    colorBtn.title = "Shape Color";
+    colorBtn.title = t("shapes.color.tooltip");
     colorBtn.addEventListener("click", () => toggleColorPicker(colorBtn));
     container.appendChild(colorBtn);
 
     // Border Width
     const wSpan = document.createElement("span");
     wSpan.className = "tool-label";
-    wSpan.textContent = "Border:";
+    wSpan.textContent = t("shapes.border");
     container.appendChild(wSpan);
 
     const wInput = document.createElement("input");
@@ -1598,9 +1616,9 @@ window.EditorTools = (function () {
     const fillSelect = document.createElement("select");
     fillSelect.className = "tool-select";
     [
-      { id: "none", label: "Transparent Fill" },
-      { id: "solid", label: "Solid Fill" },
-      { id: "semi", label: "Semi Fill" },
+      { id: "none", label: t("shapes.fill.none") },
+      { id: "solid", label: t("shapes.fill.solid") },
+      { id: "semi", label: t("shapes.fill.semi") },
     ].forEach((f) => {
       const opt = document.createElement("option");
       opt.value = f.id;

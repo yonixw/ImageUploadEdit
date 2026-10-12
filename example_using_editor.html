@@ -277,6 +277,15 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Language (?lang=)</label>
+                    <select id="cfgLang">
+                        <option value="en">English</option>
+                        <option value="he">עברית (Hebrew, RTL)</option>
+                        <option value="ja">日本語 (Japanese)</option>
+                        <option value="de">Deutsch (German)</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Modal / Window Title (?title=)</label>
                     <input type="text" id="cfgTitle" value="Photo & Media Studio">
                 </div>
@@ -379,6 +388,7 @@
             }
 
             const theme = encodeURIComponent(document.getElementById('cfgTheme').value);
+            const lang = encodeURIComponent(document.getElementById('cfgLang').value);
             const titleVal = document.getElementById('cfgTitle').value.trim() || 'Image Editor';
             const title = encodeURIComponent(titleVal);
             const token = encodeURIComponent(tokenVal);
@@ -386,7 +396,7 @@
             const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
             const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
 
-            const queryString = `token=${token}&title=${title}&theme=${theme}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+            const queryString = `token=${token}&title=${title}&theme=${theme}&lang=${lang}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
             // Append both search query (?...) and hash fragment (#...) to guarantee compatibility even in file:// or sandboxed iframes
             return `editor.html?${queryString}#${queryString}`;
         }
@@ -395,6 +405,7 @@
             if (!targetWindow) return;
             const tokenVal = document.getElementById('cfgToken').value.trim();
             const themeVal = document.getElementById('cfgTheme').value;
+            const langVal = document.getElementById('cfgLang').value;
             const titleVal = document.getElementById('cfgTitle').value.trim() || 'Image Editor';
             const formatVal = document.getElementById('cfgFormat').value;
             const maxSizeVal = parseInt(document.getElementById('cfgMaxSize').value, 10) || 0;
@@ -407,6 +418,7 @@
                     config: {
                         token: tokenVal,
                         theme: themeVal,
+                        lang: langVal,
                         title: titleVal,
                         format: formatVal,
                         maxSize: maxSizeVal,

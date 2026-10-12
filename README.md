@@ -25,6 +25,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 - **Multi-Theme Support:**
   - **Dark Themes:** `dark` (default), `midnight` (deep navy), `emerald` (forest slate), `dark-orange`, `glass` (glassmorphism).
   - **Light Themes:** `light` (clean modern), `warm-light` (editorial minimal).
+- **Multi-Language Support:** English, Hebrew (RTL), Japanese, German. Selected via `?lang=`, the browser language, or the host `INIT` / `SET_LANG` message. Translations live in `js/i18n/lang_*.js`.
 
 ---
 
@@ -132,6 +133,7 @@ window.addEventListener('message', (event) => {
 |-----------|------|---------|-------------|
 | `token` | `string` | `""` | Context/session identifier returned with exported images |
 | `theme` | `string` | `"dark"` | `dark`, `midnight`, `emerald`, `dark-orange`, `glass`, `light`, `warm-light` |
+| `lang` | `string` | browser language, else `"en"` | UI language: `en`, `he` (right-to-left), `ja`, `de`. Can also be changed at runtime with `postMessage({ action: "SET_LANG", lang: "he" })` or `config.lang` in `INIT` |
 | `title` | `string` | `"Image Editor"` | Custom title displayed in header and document title |
 | `format` | `string` | `"webp"` | Default export format (`webp`, `jpeg`, `png`) |
 | `maxSize` | `number` | `0` | Max edge resize in px (`0` for original resolution) |

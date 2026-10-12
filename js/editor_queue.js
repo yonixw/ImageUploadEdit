@@ -21,15 +21,15 @@ window.EditorQueue = (function () {
     if (btnClearAll) {
       btnClearAll.addEventListener("click", () => {
         if (items.length === 0) return;
-        if (
-          confirm("Are you sure you want to remove all images from the queue?")
-        ) {
+        if (confirm(t("gallery.confirmClearAll"))) {
           clearAll();
         }
       });
     }
 
     updateBadge();
+
+    window.addEventListener("editor:languagechange", renderGallery);
   }
 
   function generateUUID() {
@@ -253,13 +253,13 @@ window.EditorQueue = (function () {
       let statusText = "";
       if (item.status === "DONE") {
         statusColor = "#10b981";
-        statusText = "✓ Done";
+        statusText = `✓ ${t("gallery.status.done")}`;
       } else if (item.status === "UPLOADING" || item.status === "PROGRESS") {
         statusColor = "#3b82f6";
-        statusText = `⏳ ${item.progress ? item.progress + "%" : "Uploading"}`;
+        statusText = `⏳ ${item.progress ? item.progress + "%" : t("gallery.status.uploading")}`;
       } else if (item.status === "ERROR") {
         statusColor = "#ef4444";
-        statusText = "✕ Error";
+        statusText = `✕ ${t("gallery.status.error")}`;
       }
 
       if (statusText) {
@@ -281,7 +281,7 @@ window.EditorQueue = (function () {
       const delBtn = document.createElement("button");
       delBtn.className = "gallery-item-delete";
       delBtn.innerHTML = "&times;";
-      delBtn.title = "Remove Image";
+      delBtn.title = t("gallery.removeImage");
       delBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         removeItem(item.id);

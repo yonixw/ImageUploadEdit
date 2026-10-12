@@ -1,0 +1,195 @@
+/**
+ * German (Deutsch) - LTR
+ */
+window.EditorI18n.register("de", {
+  // App / header
+  "app.documentTitle": "Bild-Uploader & Editor",
+  "header.title": "Bildeditor",
+  "header.uploadImage": "Bild hochladen",
+  "header.uploadImage.tooltip": "Dieses Bild hochladen",
+  "header.uploadAll": "Alle hochladen",
+  "header.uploadAll.tooltip": "Alle exportieren & hochladen",
+  "common.close": "Schließen",
+  "common.cancel": "Abbrechen",
+  "common.reset": "Zurücksetzen",
+  "common.size": "Größe:",
+  "nav.scrollLeft": "Nach links scrollen",
+  "nav.scrollRight": "Nach rechts scrollen",
+
+  // Mode tabs
+  "tabs.addMore": "Hinzufügen",
+  "tabs.addMore.tooltip": "Weitere Bilder hinzufügen",
+  "tabs.gallery": "Galerie",
+  "tabs.gallery.tooltip": "Bilderwarteschlange anzeigen",
+  "tabs.edit": "Bearbeiten",
+  "tabs.edit.tooltip": "Aktiver Editor",
+
+  // Primary toolbar
+  "tools.undo.tooltip": "Rückgängig (Strg+Z)",
+  "tools.redo.tooltip": "Wiederholen (Strg+Y)",
+  "tools.crop": "Zuschneiden",
+  "tools.crop.tooltip": "Zuschneiden & Maske",
+  "tools.transform": "Drehen & Spiegeln",
+  "tools.transform.tooltip": "Drehen & Spiegeln",
+  "tools.filter": "Filter",
+  "tools.filter.tooltip": "Vorlagen & Anpassungen",
+  "tools.censor": "Zensieren",
+  "tools.censor.tooltip": "Weichzeichnen & Verpixeln",
+  "tools.brush": "Pinsel",
+  "tools.brush.tooltip": "Pinsel & Stift",
+  "tools.text": "Text & Emoji",
+  "tools.text.tooltip": "Text & Emoji",
+  "tools.shapes": "Formen",
+  "tools.shapes.tooltip": "Vektorformen",
+  "tools.export": "Qualität & Format",
+  "tools.export.tooltip": "Export & Qualität",
+  "tools.selectHint": "Wähle oben ein Werkzeug, um mit der Bearbeitung zu beginnen",
+
+  // Upload view
+  "upload.dropHere": "Bilder oder Ordner hier ablegen",
+  "upload.heading": "Bilder zum Editor hinzufügen",
+  "upload.subheading": "Wähle unten eine Methode oder füge aus der Zwischenablage ein (Strg+V)",
+  "upload.dropzone": "Bilddateien oder Ordner hierher ziehen & ablegen",
+  "upload.supports": "Unterstützt JPG, PNG, WebP, SVG, BMP, GIF",
+  "upload.chooseFiles": "Dateien auswählen",
+  "upload.chooseFolder": "Ordner auswählen",
+  "upload.useCamera": "Kamera verwenden",
+
+  // Gallery view
+  "gallery.title": "Bilderwarteschlange",
+  "gallery.clearAll": "Alle entfernen",
+  "gallery.confirmClearAll": "Möchtest du wirklich alle Bilder aus der Warteschlange entfernen?",
+  "gallery.removeImage": "Bild entfernen",
+  "gallery.status.done": "Fertig",
+  "gallery.status.uploading": "Wird hochgeladen",
+  "gallery.status.error": "Fehler",
+
+  // Status bar
+  "status.centerFit": "Zentrieren / Einpassen",
+  "status.centerFit.tooltip": "Bild zentrieren & an Bildschirm anpassen",
+  "status.zoom100.tooltip": "100 % Zoom (Originalgröße)",
+  "status.zoomIn.tooltip": "Vergrößern (+)",
+  "status.zoomOut.tooltip": "Verkleinern (-)",
+  "status.maxResize": "Max. Größe",
+
+  // Batch confirm modal
+  "batch.title": "Sicherheitsabfrage für Stapelimport",
+  "batch.message": "Du hast {count} Bilder ausgewählt. Das Laden und Darstellen vieler Bilder kann viel Speicher benötigen. Möchtest du fortfahren?",
+  "batch.proceed": "Fortfahren",
+
+  // Camera modal
+  "camera.title": "Foto aufnehmen",
+  "camera.switch": "Kamera wechseln",
+  "camera.snap": "Foto aufnehmen",
+  "camera.device": "Kamera {n}",
+
+  // Color picker
+  "color.palette": "PALETTE",
+  "color.recent": "ZULETZT VERWENDET",
+  "color.opacity": "Deckkraft",
+
+  // Toasts
+  "toast.noValidImages": "Keine gültigen Bilddateien gefunden.",
+  "toast.loadedFromClipboard_one": "{count} Bild aus der Zwischenablage geladen",
+  "toast.loadedFromClipboard_other": "{count} Bilder aus der Zwischenablage geladen",
+  "toast.photoCaptured": "Foto aufgenommen und zur Warteschlange hinzugefügt",
+  "toast.cameraUnsupported": "Die Kamera wird in diesem Browser nicht unterstützt.",
+  "toast.cameraDenied": "Kamerazugriff verweigert oder nicht verfügbar.",
+  "toast.loaded_one": "{count} Bild geladen",
+  "toast.loaded_other": "{count} Bilder geladen",
+  "toast.uploadFirst": "Bitte lade zuerst ein Bild hoch oder nimm eines auf.",
+  "toast.noActiveImage": "Kein aktives Bild zum Hochladen.",
+  "toast.uploadedOne": "Bild „{name}“ erfolgreich hochgeladen",
+  "toast.uploadFailed": "Bild konnte nicht hochgeladen werden.",
+  "toast.noImages": "Keine Bilder zum Hochladen.",
+  "toast.processed_one": "{count} Bild erfolgreich verarbeitet",
+  "toast.processed_other": "{count} Bilder erfolgreich verarbeitet",
+
+  // Export / quality sub-toolbar
+  "export.format": "Format:",
+  "export.format.webp": "WebP (empfohlen)",
+  "export.format.jpeg": "JPEG",
+  "export.format.png": "PNG (verlustfrei)",
+  "export.quality": "Qualität ({pct} %):",
+  "export.maxResize": "Max. Größe:",
+  "export.max.0": "Original (keine Begrenzung)",
+  "export.max.150": "150px - Quadratisches Vorschaubild / Icon",
+  "export.max.300": "300px - Avatar / Profil (1:1)",
+  "export.max.600": "600px - Klein / Karte",
+  "export.max.1080": "1080px - Mittel / Web",
+  "export.max.1200": "1200px - Social Media Querformat",
+  "export.max.1920": "1920px - Full HD (16:9)",
+  "export.max.2560": "2560px - 2K QHD",
+  "export.previewOn": "✓ Vorschau: AN",
+  "export.previewOff": "👁 Qualitätsvorschau",
+  "export.preview.tooltip": "Live-Vorschau der komprimierten & skalierten Ausgabe ein-/ausschalten",
+  "export.uploading": "Wird hochgeladen...",
+  "export.processing": "Wird verarbeitet...",
+
+  // Crop
+  "crop.free": "Frei",
+  "crop.square": "1:1 Quadrat",
+  "crop.avatar": "Avatar-Kreis",
+  "crop.apply": "Zuschnitt anwenden",
+
+  // Transform
+  "transform.cw": "90° rechts",
+  "transform.ccw": "90° links",
+  "transform.flipH": "Horizontal spiegeln",
+  "transform.flipV": "Vertikal spiegeln",
+  "transform.freeRotate": "Freie Drehung:",
+  "transform.bg": "Hintergrund:",
+  "transform.bg.transparent": "Transparent",
+  "transform.bg.white": "Weiß",
+  "transform.bg.black": "Schwarz",
+  "transform.apply": "Drehung anwenden",
+
+  // Filters
+  "filter.normal": "Normal",
+  "filter.grayscale": "Graustufen",
+  "filter.bw": "S/W",
+  "filter.sepia": "Sepia",
+  "filter.invert": "Invertieren",
+  "filter.brightness": "Helligkeit:",
+  "filter.contrast": "Kontrast:",
+  "filter.saturation": "Sättigung:",
+  "filter.apply": "Filter anwenden",
+
+  // Censor
+  "censor.pixelate": "Verpixeln",
+  "censor.blur": "Weichzeichnen",
+  "censor.box": "Rechteckauswahl",
+  "censor.brush": "Pinsel",
+  "censor.freehandIn": "Freihand (innen)",
+  "censor.freehandOut": "Freihand (außen)",
+  "censor.radius": "Stärke / Radius:",
+
+  // Brush
+  "brush.color.tooltip": "Farbe & Deckkraft ändern",
+
+  // Text
+  "text.default": "Doppelklicken oder Text bearbeiten",
+  "text.color.tooltip": "Textfarbe",
+  "text.bold.tooltip": "Fett",
+  "text.italic.tooltip": "Kursiv",
+  "text.badge": "Hintergrund",
+  "text.rotate": "Drehen:",
+  "text.rotate.tooltip": "Text drehen (0° bis 360°)",
+  "text.rotateMinus.tooltip": "Um -45° drehen",
+  "text.rotatePlus.tooltip": "Um +45° drehen",
+  "text.rotateReset.tooltip": "Drehung auf 0° zurücksetzen",
+  "text.burn": "Text einbrennen",
+
+  // Shapes
+  "shapes.rect": "Rechteck",
+  "shapes.roundedRect": "Abgerundetes Rechteck",
+  "shapes.circle": "Kreis / Ellipse",
+  "shapes.line": "Linie",
+  "shapes.arrow": "Pfeil",
+  "shapes.star": "Stern",
+  "shapes.color.tooltip": "Formfarbe",
+  "shapes.border": "Rand:",
+  "shapes.fill.none": "Ohne Füllung",
+  "shapes.fill.solid": "Volle Füllung",
+  "shapes.fill.semi": "Halbtransparente Füllung",
+});

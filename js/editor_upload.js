@@ -54,7 +54,7 @@ window.EditorUpload = (function () {
     const imageFiles = files.filter((file) => isImageFile(file));
     if (!imageFiles.length) {
       if (files.length > 0) {
-        showToast("No valid image files found.");
+        showToast(t("toast.noValidImages"));
       }
       return;
     }
@@ -71,7 +71,7 @@ window.EditorUpload = (function () {
     const modal = document.getElementById("modalBatchConfirm");
     const msg = document.getElementById("batchConfirmMessage");
     if (msg) {
-      msg.textContent = `You selected ${count} images. Loading and rendering a large batch may take some memory. Do you want to proceed?`;
+      msg.textContent = t("batch.message", { count });
     }
     if (modal) modal.classList.add("active");
   }
@@ -219,7 +219,7 @@ window.EditorUpload = (function () {
 
       if (files.length > 0) {
         handleFileList(files);
-        showToast(`Loaded ${files.length} image(s) from clipboard`);
+        showToast(t("toast.loadedFromClipboard", { count: files.length }));
       }
     });
   }
@@ -278,7 +278,7 @@ window.EditorUpload = (function () {
 
         if (window.EditorQueue) {
           window.EditorQueue.addItem(filename, offCanvas, "image/jpeg");
-          showToast("Photo captured and added to queue");
+          showToast(t("toast.photoCaptured"));
         }
 
         stopCameraStream();
@@ -304,7 +304,7 @@ window.EditorUpload = (function () {
       videoDevices.forEach((device, idx) => {
         const opt = document.createElement("option");
         opt.value = device.deviceId;
-        opt.textContent = device.label || `Camera ${idx + 1}`;
+        opt.textContent = device.label || t("camera.device", { n: idx + 1 });
         select.appendChild(opt);
       });
     } catch (e) {
@@ -320,7 +320,7 @@ window.EditorUpload = (function () {
       !navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia
     ) {
-      showToast("Camera not supported in this browser.");
+      showToast(t("toast.cameraUnsupported"));
       return;
     }
 
@@ -348,7 +348,7 @@ window.EditorUpload = (function () {
         video.srcObject = cameraStream;
         video.play();
       } catch (err2) {
-        showToast("Camera access denied or unavailable.");
+        showToast(t("toast.cameraDenied"));
       }
     }
   }
@@ -384,7 +384,7 @@ window.EditorUpload = (function () {
     }
 
     if (addedCount > 0) {
-      showToast(`Loaded ${addedCount} image(s)`);
+      showToast(t("toast.loaded", { count: addedCount }));
       if (
         window.EditorApp &&
         typeof window.EditorApp.switchTab === "function"

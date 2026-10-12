@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Image Uploader & Editor</title>
+    <title data-i18n="app.documentTitle">Image Uploader & Editor</title>
     <script>
         (function () {
             function getParam(key) {
@@ -52,12 +52,19 @@
                 } catch (e) { }
                 return null;
             }
+            window.EditorGetParam = getParam; // shared with js/i18n/editor_i18n.js
             var rawTheme = (getParam('theme') || 'dark').toLowerCase();
             var validThemes = ['dark', 'glass', 'dark-orange', 'light', 'warm-light', 'midnight', 'emerald'];
             var theme = validThemes.indexOf(rawTheme) !== -1 ? rawTheme : 'dark';
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
+    <!-- i18n: loaded in <head> so language & direction are set before first paint -->
+    <script src="js/i18n/editor_i18n.js"></script>
+    <script src="js/i18n/lang_en.js"></script>
+    <script src="js/i18n/lang_he.js"></script>
+    <script src="js/i18n/lang_ja.js"></script>
+    <script src="js/i18n/lang_de.js"></script>
     <link rel="stylesheet" href="theme/theme.css">
 </head>
 
@@ -67,24 +74,24 @@
 
         <!-- === 1. App Header Row: Title & Actions === -->
         <header class="app-header">
-            <span class="header-title" id="appHeaderTitle">Image Editor</span>
+            <span class="header-title" id="appHeaderTitle" data-i18n="header.title">Image Editor</span>
 
             <div class="header-actions">
                 <!-- Single Image Upload Action (in Edit view) -->
-                <button class="btn btn-success" id="btnUploadSingle" title="Upload this image" style="display:none;">
+                <button class="btn btn-success" id="btnUploadSingle" title="Upload this image" data-i18n-title="header.uploadImage.tooltip" style="display:none;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                     </svg>
-                    Upload Image
+                    <span data-i18n="header.uploadImage">Upload Image</span>
                 </button>
                 <!-- Batch Upload Action (in Gallery / Upload view) -->
-                <button class="btn btn-success" id="btnUploadDone" title="Export & upload batch">
+                <button class="btn btn-success" id="btnUploadDone" title="Export & upload batch" data-i18n-title="header.uploadAll.tooltip">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
                     </svg>
-                    Upload All
+                    <span data-i18n="header.uploadAll">Upload All</span>
                 </button>
-                <button class="btn btn-icon" id="btnCloseWindow" title="Close" style="display:none; font-size:18px;">
+                <button class="btn btn-icon" id="btnCloseWindow" title="Close" data-i18n-title="common.close" style="display:none; font-size:18px;">
                     &times;
                 </button>
             </div>
@@ -92,47 +99,47 @@
 
         <!-- === 2. Mode Navigation Tabs Row with Scroll Overflow Indicators === -->
         <div class="toolbar-wrapper tabs-toolbar" id="tabsToolbarWrapper">
-            <button class="toolbar-arrow left" id="tabsArrowLeft" aria-label="Scroll left">&#10094;</button>
+            <button class="toolbar-arrow left" id="tabsArrowLeft" aria-label="Scroll left" data-i18n-aria-label="nav.scrollLeft">&#10094;</button>
             <div class="toolbar-scroll" id="tabsToolbarScroll">
                 <nav class="header-nav">
-                    <button class="nav-tab active" id="tabUpload" title="Add More Images">
+                    <button class="nav-tab active" id="tabUpload" title="Add More Images" data-i18n-title="tabs.addMore.tooltip">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
                         </svg>
-                        Add more
+                        <span data-i18n="tabs.addMore">Add more</span>
                     </button>
-                    <button class="nav-tab" id="tabGallery" title="View Image Queue">
+                    <button class="nav-tab" id="tabGallery" title="View Image Queue" data-i18n-title="tabs.gallery.tooltip">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z" />
                         </svg>
-                        Gallery
+                        <span data-i18n="tabs.gallery">Gallery</span>
                         <span class="nav-badge" id="queueBadge">0</span>
                     </button>
-                    <button class="nav-tab" id="tabEdit" title="Active Editor">
+                    <button class="nav-tab" id="tabEdit" title="Active Editor" data-i18n-title="tabs.edit.tooltip">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                         </svg>
-                        Edit
+                        <span data-i18n="tabs.edit">Edit</span>
                     </button>
                 </nav>
             </div>
-            <button class="toolbar-arrow right" id="tabsArrowRight" aria-label="Scroll right">&#10095;</button>
+            <button class="toolbar-arrow right" id="tabsArrowRight" aria-label="Scroll right" data-i18n-aria-label="nav.scrollRight">&#10095;</button>
         </div>
 
         <!-- === 2. Toolbar 1 (Primary Tools) with Overflow Indicators === -->
         <div class="toolbar-wrapper" id="toolbar1Wrapper">
-            <button class="toolbar-arrow left" id="tb1ArrowLeft" aria-label="Scroll left">&#10094;</button>
+            <button class="toolbar-arrow left" id="tb1ArrowLeft" aria-label="Scroll left" data-i18n-aria-label="nav.scrollLeft">&#10094;</button>
             <div class="toolbar-scroll" id="toolbar1Scroll">
                 <!-- Undo & Redo at the start of the row -->
-                <button class="tool-btn" id="btnUndo" title="Undo (Ctrl+Z)">
+                <button class="tool-btn" id="btnUndo" title="Undo (Ctrl+Z)" data-i18n-title="tools.undo.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z" />
                     </svg>
                 </button>
-                <button class="tool-btn" id="btnRedo" title="Redo (Ctrl+Y)">
+                <button class="tool-btn" id="btnRedo" title="Redo (Ctrl+Y)" data-i18n-title="tools.redo.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z" />
@@ -140,92 +147,92 @@
                 </button>
                 <div class="tool-divider"></div>
 
-                <button class="tool-btn" id="toolCrop" data-tool="crop" title="Crop & Mask">
+                <button class="tool-btn" id="toolCrop" data-tool="crop" title="Crop & Mask" data-i18n-title="tools.crop.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z" />
                     </svg>
-                    Crop
+                    <span data-i18n="tools.crop">Crop</span>
                 </button>
-                <button class="tool-btn" id="toolTransform" data-tool="transform" title="Rotate & Flip">
+                <button class="tool-btn" id="toolTransform" data-tool="transform" title="Rotate & Flip" data-i18n-title="tools.transform.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M7.34 6.41L.86 12.89l5.71 5.7 1.41-1.41-4.29-4.29 4.29-4.29-1.41-1.41zM20.86 11.48l-5.71-5.7-1.41 1.41 4.29 4.29-4.29 4.29 1.41 1.41 5.71-5.7zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                     </svg>
-                    Rotate & Flip
+                    <span data-i18n="tools.transform">Rotate & Flip</span>
                 </button>
-                <button class="tool-btn" id="toolFilter" data-tool="filter" title="Presets & Adjustments">
+                <button class="tool-btn" id="toolFilter" data-tool="filter" title="Presets & Adjustments" data-i18n-title="tools.filter.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4v8z" />
                     </svg>
-                    Filters
+                    <span data-i18n="tools.filter">Filters</span>
                 </button>
-                <button class="tool-btn" id="toolCensor" data-tool="censor" title="Blur & Pixelate">
+                <button class="tool-btn" id="toolCensor" data-tool="censor" title="Blur & Pixelate" data-i18n-title="tools.censor.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
                     </svg>
-                    Censor
+                    <span data-i18n="tools.censor">Censor</span>
                 </button>
-                <button class="tool-btn" id="toolBrush" data-tool="brush" title="Brush & Pencil">
+                <button class="tool-btn" id="toolBrush" data-tool="brush" title="Brush & Pencil" data-i18n-title="tools.brush.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.13-3.13c.4-.4.4-1.03 0-1.41zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z" />
                     </svg>
-                    Brush
+                    <span data-i18n="tools.brush">Brush</span>
                 </button>
-                <button class="tool-btn" id="toolText" data-tool="text" title="Text & Emoji">
+                <button class="tool-btn" id="toolText" data-tool="text" title="Text & Emoji" data-i18n-title="tools.text.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path d="M5 4v3h5.5v12h3V7H19V4z" />
                     </svg>
-                    Text & Emoji
+                    <span data-i18n="tools.text">Text & Emoji</span>
                 </button>
-                <button class="tool-btn" id="toolShapes" data-tool="shapes" title="Vector Shapes">
+                <button class="tool-btn" id="toolShapes" data-tool="shapes" title="Vector Shapes" data-i18n-title="tools.shapes.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                     </svg>
-                    Shapes
+                    <span data-i18n="tools.shapes">Shapes</span>
                 </button>
                 <div class="tool-divider"></div>
-                <button class="tool-btn" id="toolExportSettings" data-tool="export" title="Export & Quality">
+                <button class="tool-btn" id="toolExportSettings" data-tool="export" title="Export & Quality" data-i18n-title="tools.export.tooltip">
                     <svg viewBox="0 0 24 24">
                         <path
                             d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z" />
                     </svg>
-                    Quality & Format
+                    <span data-i18n="tools.export">Quality & Format</span>
                 </button>
             </div>
-            <button class="toolbar-arrow right" id="tb1ArrowRight" aria-label="Scroll right">&#10095;</button>
+            <button class="toolbar-arrow right" id="tb1ArrowRight" aria-label="Scroll right" data-i18n-aria-label="nav.scrollRight">&#10095;</button>
         </div>
 
         <!-- === 3. Toolbar 2 (Contextual Sub-Tools) with Overflow Indicators === -->
         <div class="toolbar-wrapper sub-toolbar" id="toolbar2Wrapper">
-            <button class="toolbar-arrow left" id="tb2ArrowLeft" aria-label="Scroll left">&#10094;</button>
+            <button class="toolbar-arrow left" id="tb2ArrowLeft" aria-label="Scroll left" data-i18n-aria-label="nav.scrollLeft">&#10094;</button>
             <div class="toolbar-scroll" id="toolbar2Scroll">
                 <!-- Dynamically populated by active tool strategy -->
-                <span class="tool-label" id="tb2DefaultText">Select a tool above to begin editing</span>
+                <span class="tool-label" id="tb2DefaultText" data-i18n="tools.selectHint">Select a tool above to begin editing</span>
             </div>
-            <button class="toolbar-arrow right" id="tb2ArrowRight" aria-label="Scroll right">&#10095;</button>
+            <button class="toolbar-arrow right" id="tb2ArrowRight" aria-label="Scroll right" data-i18n-aria-label="nav.scrollRight">&#10095;</button>
         </div>
 
         <!-- === 4. Main Viewport Canvas (60% to 80% Viewport Height) === -->
         <main class="viewport-container" id="viewportContainer">
-            <div class="canvas-wrapper" id="canvasWrapper">
+            <div class="canvas-wrapper" id="canvasWrapper" dir="ltr">
                 <canvas id="displayCanvas"></canvas>
             </div>
 
             <!-- Drag and Drop Overlay Scrim -->
             <div class="drag-scrim" id="dragScrim">
-                <div style="font-size: 20px; font-weight: 700; color: #fff;">Drop Images or Folders Here</div>
+                <div style="font-size: 20px; font-weight: 700; color: #fff;" data-i18n="upload.dropHere">Drop Images or Folders Here</div>
             </div>
 
             <!-- Ingest / Upload Tab View -->
             <div class="view-overlay active" id="viewUpload">
                 <div class="upload-view-content">
-                    <h2 style="font-size: 22px; font-weight: 600;">Add Images to Editor</h2>
-                    <p style="color: var(--text-muted);">Choose an ingestion method below, or paste from clipboard
+                    <h2 style="font-size: 22px; font-weight: 600;" data-i18n="upload.heading">Add Images to Editor</h2>
+                    <p style="color: var(--text-muted);" data-i18n="upload.subheading">Choose an ingestion method below, or paste from clipboard
                         (Ctrl+V)</p>
 
                     <div class="dropzone-box" id="dropzoneBox">
@@ -233,8 +240,8 @@
                             <path
                                 d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
                         </svg>
-                        <div style="font-weight: 600; font-size: 16px;">Drag & Drop Image Files or Folders Here</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Supports JPG, PNG, WebP, SVG, BMP, GIF
+                        <div style="font-weight: 600; font-size: 16px;" data-i18n="upload.dropzone">Drag & Drop Image Files or Folders Here</div>
+                        <div style="font-size: 12px; color: var(--text-muted);" data-i18n="upload.supports">Supports JPG, PNG, WebP, SVG, BMP, GIF
                         </div>
                     </div>
 
@@ -244,21 +251,21 @@
                                 <path
                                     d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
                             </svg>
-                            <span>Choose Files</span>
+                            <span data-i18n="upload.chooseFiles">Choose Files</span>
                         </div>
                         <div class="upload-option-card" id="btnPickFolder">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="#f59e0b">
                                 <path
                                     d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
                             </svg>
-                            <span>Choose Folder</span>
+                            <span data-i18n="upload.chooseFolder">Choose Folder</span>
                         </div>
                         <div class="upload-option-card" id="btnLaunchCamera">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="#10b981">
                                 <path
                                     d="M9.4 10.5l4.77-8.26C13.47 2.09 12.75 2 12 2c-2.4 0-4.6.85-6.32 2.25l3.66 6.35.06-.1zM21.54 9c-.92-2.92-3.15-5.26-6-6.34L11.88 9h9.66zm.26 1h-7.49l.29.5 4.76 8.25C21 16.97 22 14.61 22 12c0-.69-.07-1.35-.2-2zM8.54 12l-3.9-6.75C3.01 7.03 2 9.39 2 12c0 .69.07 1.35.2 2h7.49l-1.15-2zm-6.34 3c.92 2.92 3.15 5.26 6 6.34L11.86 15H2.2zm10.02 5.75C12.53 21.91 13.25 22 14 22c2.4 0 4.6-.85 6.32-2.25l-3.66-6.35-.06.1-4.38 7.25z" />
                             </svg>
-                            <span>Use Camera</span>
+                            <span data-i18n="upload.useCamera">Use Camera</span>
                         </div>
                     </div>
 
@@ -271,9 +278,9 @@
             <!-- Gallery / Queue Tab View -->
             <div class="view-overlay" id="viewGallery">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <div style="font-size: 16px; font-weight: 600;">Image Queue (<span id="galleryCount">0</span>)</div>
+                    <div style="font-size: 16px; font-weight: 600;"><span data-i18n="gallery.title">Image Queue</span> (<span id="galleryCount">0</span>)</div>
                     <div>
-                        <button class="btn" id="btnGalleryClearAll" style="color: var(--danger);">Clear All</button>
+                        <button class="btn" id="btnGalleryClearAll" style="color: var(--danger);" data-i18n="gallery.clearAll">Clear All</button>
                     </div>
                 </div>
                 <div class="gallery-grid" id="galleryGrid"></div>
@@ -283,13 +290,14 @@
         <!-- === 5. Compact Status Bar (Bottom) === -->
         <footer class="app-status-bar" id="statusBarWrapper">
             <div class="status-bar-controls">
-                <button class="btn-status" id="btnCenterView" title="Center & Fit image to screen">⛶ Center /
-                    Fit</button>
-                <button class="btn-status" id="btnZoom100" title="100% Zoom (Actual Size)">1:1</button>
-                <button class="btn-status" id="btnZoomIn" title="Zoom In (+)">+</button>
-                <button class="btn-status" id="btnZoomOut" title="Zoom Out (-)">-</button>
+                <button class="btn-status" id="btnCenterView" title="Center & Fit image to screen"
+                    data-i18n-title="status.centerFit.tooltip">⛶ <span data-i18n="status.centerFit">Center /
+                        Fit</span></button>
+                <button class="btn-status" id="btnZoom100" title="100% Zoom (Actual Size)" data-i18n-title="status.zoom100.tooltip">1:1</button>
+                <button class="btn-status" id="btnZoomIn" title="Zoom In (+)" data-i18n-title="status.zoomIn.tooltip">+</button>
+                <button class="btn-status" id="btnZoomOut" title="Zoom Out (-)" data-i18n-title="status.zoomOut.tooltip">-</button>
             </div>
-            <div class="status-bar-scroll" id="statusBarText">100%, 0x0, 0KB</div>
+            <div class="status-bar-scroll" id="statusBarText" dir="ltr">100%, 0x0, 0KB</div>
             <a href="https://github.com/yonixw/ImageUploadEdit" target="_blank" rel="noopener noreferrer"
                 class="status-bar-link">by yonixw v302</a>
         </footer>
@@ -301,13 +309,13 @@
     <!-- Batch Confirmation Modal (>10 files) -->
     <div class="modal-overlay" id="modalBatchConfirm">
         <div class="modal-card">
-            <div class="modal-header">Batch Ingestion Safeguard</div>
+            <div class="modal-header" data-i18n="batch.title">Batch Ingestion Safeguard</div>
             <div class="modal-body">
                 <p id="batchConfirmMessage">You selected 15 images. Do you want to proceed with loading them?</p>
             </div>
             <div class="modal-footer">
-                <button class="btn" id="btnBatchCancel">Cancel</button>
-                <button class="btn btn-primary" id="btnBatchProceed">Proceed</button>
+                <button class="btn" id="btnBatchCancel" data-i18n="common.cancel">Cancel</button>
+                <button class="btn btn-primary" id="btnBatchProceed" data-i18n="batch.proceed">Proceed</button>
             </div>
         </div>
     </div>
@@ -316,8 +324,8 @@
     <div class="modal-overlay" id="modalCamera">
         <div class="modal-card" style="max-width: 600px;">
             <div class="modal-header">
-                <span>Capture Photo</span>
-                <button class="btn btn-icon" id="btnCameraClose">&times;</button>
+                <span data-i18n="camera.title">Capture Photo</span>
+                <button class="btn btn-icon" id="btnCameraClose" title="Close" data-i18n-title="common.close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="camera-preview-box">
@@ -325,8 +333,8 @@
                 </div>
                 <div class="camera-controls-row">
                     <select class="tool-select" id="cameraDeviceSelect" style="flex:1; max-width:200px;"></select>
-                    <button class="btn" id="btnCameraFacing">Switch Camera</button>
-                    <button class="btn btn-primary" id="btnCameraSnap">Snap Photo</button>
+                    <button class="btn" id="btnCameraFacing" data-i18n="camera.switch">Switch Camera</button>
+                    <button class="btn btn-primary" id="btnCameraSnap" data-i18n="camera.snap">Snap Photo</button>
                 </div>
             </div>
         </div>
@@ -334,19 +342,19 @@
 
     <!-- Color Chooser Popover -->
     <div class="color-picker-popover" id="colorPickerPopover">
-        <div style="font-size: 11px; font-weight: 600; color: var(--text-muted);">PALETTE</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--text-muted);" data-i18n="color.palette">PALETTE</div>
         <div class="color-swatches-grid" id="paletteSwatches"></div>
-        <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px;">RECENT COLORS</div>
+        <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-top: 4px;" data-i18n="color.recent">RECENT COLORS</div>
         <div class="color-swatches-grid" id="recentSwatches"></div>
         <div style="display: flex; gap: 6px; align-items: center; margin-top: 4px;">
             <input type="color" id="nativeColorInput"
                 style="width:36px; height:28px; padding:0; border:none; cursor:pointer; background:none;">
-            <input type="text" id="hexColorInput" value="#3b82f6"
+            <input type="text" id="hexColorInput" dir="ltr" value="#3b82f6"
                 style="flex:1; height:28px; background:var(--bg-active); border:1px solid var(--border-color); color:#fff; border-radius:4px; padding:0 6px; font-size:12px; font-family:monospace;">
         </div>
         <div style="display:flex; flex-direction:column; gap:4px;">
             <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
-                <span>Opacity</span>
+                <span data-i18n="color.opacity">Opacity</span>
                 <span id="alphaValueText">100%</span>
             </div>
             <input type="range" id="alphaSlider" min="0" max="100" value="100" class="tool-input-slider"

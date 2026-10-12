@@ -76,6 +76,7 @@ window.EditorHost = (function () {
   const config = {
     token: getUrlParameter("token") || "",
     title: getUrlParameter("title") || "",
+    lang: window.EditorI18n ? window.EditorI18n.lang : "en",
     theme: validThemes.includes(rawTheme) ? rawTheme : "dark",
     autoClose:
       getUrlParameter("autoClose") === "true" ||
@@ -93,8 +94,12 @@ window.EditorHost = (function () {
     if (!title) return;
     config.title = title;
     document.title = title;
+    // Custom host title must not be overwritten by translations
+    const titleTag = document.querySelector("title[data-i18n]");
+    if (titleTag) titleTag.removeAttribute("data-i18n");
     const headerTitle = document.getElementById("appHeaderTitle");
     if (headerTitle) {
+      headerTitle.removeAttribute("data-i18n");
       headerTitle.textContent = title;
       headerTitle.title = title;
       headerTitle.style.display = "block";
@@ -174,9 +179,13 @@ window.EditorHost = (function () {
         Object.assign(config, data.config);
         if (data.config.theme) setTheme(data.config.theme);
         if (data.config.title) setTitle(data.config.title);
+        if (data.config.lang && window.EditorI18n)
+          window.EditorI18n.setLanguage(data.config.lang);
       }
     } else if (data.action === "SET_THEME") {
       if (data.theme) setTheme(data.theme);
+    } else if (data.action === "SET_LANG") {
+      if (data.lang && window.EditorI18n) window.EditorI18n.setLanguage(data.lang);
     } else if (data.action === "UPLOAD_STATUS") {
       if (
         window.EditorQueue &&
