@@ -2,7 +2,7 @@
 
 A standalone, zero-external-dependency HTML5 client-side image uploader and multi-tool image editor. Works out of the box in an iframe modal, a popup window, a new browser tab, or as a standalone app.
 
-> **AI Disclosure:** This project was developed and designed with the assistance of AI (**Google Gemini 3.7**).
+> **AI Disclosure:** This project was developed and designed with the assistance of AI (**Google Gemini 3.7** and **Anthropic Claude**).
 
 
 
