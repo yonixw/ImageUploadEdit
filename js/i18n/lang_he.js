@@ -1,0 +1,198 @@
+/**
+ * Hebrew (עברית) - RTL
+ */
+window.EditorI18n.register("he", {
+  // App / header
+  "app.documentTitle": "העלאה ועריכת תמונות",
+  "header.title": "עורך תמונות",
+  "header.uploadImage": "העלאת תמונה",
+  "header.uploadImage.tooltip": "העלאת התמונה הזו",
+  "header.uploadAll": "העלאת הכל",
+  "header.uploadAll.tooltip": "ייצוא והעלאה של כל התמונות",
+  "common.close": "סגירה",
+  "common.cancel": "ביטול",
+  "common.reset": "איפוס",
+  "common.size": "גודל:",
+  "nav.scrollLeft": "גלילה שמאלה",
+  "nav.scrollRight": "גלילה ימינה",
+
+  // Mode tabs
+  "tabs.addMore": "הוספה",
+  "tabs.addMore.tooltip": "הוספת תמונות נוספות",
+  "tabs.gallery": "גלריה",
+  "tabs.gallery.tooltip": "צפייה בתור התמונות",
+  "tabs.edit": "עריכה",
+  "tabs.edit.tooltip": "העורך הפעיל",
+
+  // Primary toolbar
+  "tools.undo.tooltip": "ביטול פעולה (Ctrl+Z)",
+  "tools.redo.tooltip": "ביצוע מחדש (Ctrl+Y)",
+  "tools.crop": "חיתוך",
+  "tools.crop.tooltip": "חיתוך ומסכה",
+  "tools.transform": "סיבוב והיפוך",
+  "tools.transform.tooltip": "סיבוב והיפוך",
+  "tools.filter": "מסננים",
+  "tools.filter.tooltip": "סגנונות והתאמות",
+  "tools.censor": "הסתרה",
+  "tools.censor.tooltip": "טשטוש ופיקסול",
+  "tools.brush": "מברשת",
+  "tools.brush.tooltip": "מברשת ועיפרון",
+  "tools.text": "טקסט ואימוג׳י",
+  "tools.text.tooltip": "טקסט ואימוג׳י",
+  "tools.shapes": "צורות",
+  "tools.shapes.tooltip": "צורות וקטוריות",
+  "tools.export": "איכות ופורמט",
+  "tools.export.tooltip": "ייצוא ואיכות",
+  "tools.selectHint": "בחרו כלי למעלה כדי להתחיל לערוך",
+
+  // Upload view
+  "upload.dropHere": "שחררו כאן תמונות או תיקיות",
+  "upload.heading": "הוספת תמונות לעורך",
+  "upload.subheading": "בחרו שיטת הוספה למטה, או הדביקו מהלוח (Ctrl+V)",
+  "upload.dropzone": "גררו ושחררו כאן קובצי תמונה או תיקיות",
+  "upload.supports": "נתמכים: JPG, PNG, WebP, SVG, BMP, GIF",
+  "upload.chooseFiles": "בחירת קבצים",
+  "upload.chooseFolder": "בחירת תיקייה",
+  "upload.useCamera": "שימוש במצלמה",
+
+  // Gallery view
+  "gallery.title": "תור תמונות",
+  "gallery.clearAll": "ניקוי הכל",
+  "gallery.confirmClearAll": "האם אתם בטוחים שברצונכם להסיר את כל התמונות מהתור?",
+  "gallery.removeImage": "הסרת תמונה",
+  "gallery.status.done": "הושלם",
+  "gallery.status.uploading": "מעלה",
+  "gallery.status.error": "שגיאה",
+
+  // Status bar
+  "status.centerFit": "מרכוז / התאמה",
+  "status.centerFit.tooltip": "מרכוז והתאמת התמונה למסך",
+  "status.zoom100.tooltip": "זום 100% (גודל אמיתי)",
+  "status.zoomIn.tooltip": "הגדלה (+)",
+  "status.zoomOut.tooltip": "הקטנה (-)",
+  "status.maxResize": "הקטנה מרבית",
+
+  // Batch confirm modal
+  "batch.title": "אישור טעינה מרובה",
+  "batch.message": "בחרתם {count} תמונות. טעינה ועיבוד של כמות גדולה עשויים לצרוך זיכרון רב. האם להמשיך?",
+  "batch.proceed": "המשך",
+
+  // Camera modal
+  "camera.title": "צילום תמונה",
+  "camera.switch": "החלפת מצלמה",
+  "camera.snap": "צילום",
+  "camera.device": "מצלמה {n}",
+
+  // Color picker
+  "color.palette": "פלטה",
+  "color.recent": "צבעים אחרונים",
+  "color.opacity": "אטימות",
+
+  // Toasts
+  "toast.noValidImages": "לא נמצאו קובצי תמונה תקינים.",
+  "toast.loadedFromClipboard_one": "נטענה תמונה אחת מהלוח",
+  "toast.loadedFromClipboard_two": "נטענו שתי תמונות מהלוח",
+  "toast.loadedFromClipboard_other": "נטענו {count} תמונות מהלוח",
+  "toast.photoCaptured": "התמונה צולמה ונוספה לתור",
+  "toast.cameraUnsupported": "הדפדפן אינו תומך במצלמה.",
+  "toast.cameraDenied": "הגישה למצלמה נדחתה או שהמצלמה אינה זמינה.",
+  "toast.loaded_one": "נטענה תמונה אחת",
+  "toast.loaded_two": "נטענו שתי תמונות",
+  "toast.loaded_other": "נטענו {count} תמונות",
+  "toast.uploadFirst": "יש להעלות או לצלם תמונה תחילה.",
+  "toast.noActiveImage": "אין תמונה פעילה להעלאה.",
+  "toast.uploadedOne": "התמונה \"{name}\" הועלתה בהצלחה",
+  "toast.uploadFailed": "העלאת התמונה נכשלה.",
+  "toast.noImages": "אין תמונות להעלאה.",
+  "toast.processed_one": "תמונה אחת עובדה בהצלחה",
+  "toast.processed_two": "שתי תמונות עובדו בהצלחה",
+  "toast.processed_other": "{count} תמונות עובדו בהצלחה",
+
+  // Export / quality sub-toolbar
+  "export.format": "פורמט:",
+  "export.format.webp": "WebP (מומלץ)",
+  "export.format.jpeg": "JPEG",
+  "export.format.png": "PNG (ללא אובדן איכות)",
+  "export.quality": "איכות ({pct}%):",
+  "export.maxResize": "גודל מרבי:",
+  "export.max.0": "מקורי (ללא הגבלה)",
+  "export.max.150": "150px - תמונה ממוזערת / אייקון",
+  "export.max.300": "300px - תמונת פרופיל (1:1)",
+  "export.max.600": "600px - קטן / כרטיס",
+  "export.max.1080": "1080px - בינוני / אינטרנט",
+  "export.max.1200": "1200px - רשתות חברתיות (לרוחב)",
+  "export.max.1920": "1920px - Full HD (16:9)",
+  "export.max.2560": "2560px - 2K QHD",
+  "export.previewOn": "✓ תצוגה מקדימה: פעילה",
+  "export.previewOff": "👁 תצוגה מקדימה של האיכות",
+  "export.preview.tooltip": "הצגה חיה של התוצאה לאחר דחיסה ושינוי גודל",
+  "export.uploading": "מעלה...",
+  "export.processing": "מעבד...",
+
+  // Crop
+  "crop.free": "חופשי",
+  "crop.square": "1:1 ריבוע",
+  "crop.avatar": "עיגול פרופיל",
+  "crop.apply": "החלת חיתוך",
+
+  // Transform
+  "transform.cw": "90° עם כיוון השעון",
+  "transform.ccw": "90° נגד כיוון השעון",
+  "transform.flipH": "היפוך אופקי",
+  "transform.flipV": "היפוך אנכי",
+  "transform.freeRotate": "סיבוב חופשי:",
+  "transform.bg": "רקע:",
+  "transform.bg.transparent": "שקוף",
+  "transform.bg.white": "לבן",
+  "transform.bg.black": "שחור",
+  "transform.apply": "החלת סיבוב",
+
+  // Filters
+  "filter.normal": "רגיל",
+  "filter.grayscale": "גווני אפור",
+  "filter.bw": "שחור-לבן",
+  "filter.sepia": "ספיה",
+  "filter.invert": "היפוך צבעים",
+  "filter.brightness": "בהירות:",
+  "filter.contrast": "ניגודיות:",
+  "filter.saturation": "רוויה:",
+  "filter.apply": "החלת מסננים",
+
+  // Censor
+  "censor.pixelate": "פיקסול",
+  "censor.blur": "טשטוש",
+  "censor.box": "בחירה מלבנית",
+  "censor.brush": "מברשת",
+  "censor.freehandIn": "יד חופשית - פנים",
+  "censor.freehandOut": "יד חופשית - חוץ",
+  "censor.radius": "עוצמה / רדיוס:",
+
+  // Brush
+  "brush.color.tooltip": "שינוי צבע ואטימות",
+
+  // Text
+  "text.default": "לחצו פעמיים או ערכו את הטקסט",
+  "text.color.tooltip": "צבע טקסט",
+  "text.bold.tooltip": "מודגש",
+  "text.italic.tooltip": "נטוי",
+  "text.badge": "רקע לטקסט",
+  "text.rotate": "סיבוב:",
+  "text.rotate.tooltip": "סיבוב טקסט (0° עד 360°)",
+  "text.rotateMinus.tooltip": "סיבוב -45°",
+  "text.rotatePlus.tooltip": "סיבוב +45°",
+  "text.rotateReset.tooltip": "איפוס סיבוב ל-0°",
+  "text.burn": "הטמעת טקסט",
+
+  // Shapes
+  "shapes.rect": "מלבן",
+  "shapes.roundedRect": "מלבן מעוגל",
+  "shapes.circle": "עיגול / אליפסה",
+  "shapes.line": "קו",
+  "shapes.arrow": "חץ",
+  "shapes.star": "כוכב",
+  "shapes.color.tooltip": "צבע צורה",
+  "shapes.border": "קו מתאר:",
+  "shapes.fill.none": "ללא מילוי",
+  "shapes.fill.solid": "מילוי מלא",
+  "shapes.fill.semi": "מילוי חצי שקוף",
+});

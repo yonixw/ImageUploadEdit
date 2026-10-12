@@ -48,9 +48,7 @@ window.EditorApp = (function () {
       tabEdit.addEventListener("click", () => {
         if (!window.EditorQueue || !window.EditorQueue.items.length) {
           if (window.EditorUpload) {
-            window.EditorUpload.showToast(
-              "Please upload or capture an image first.",
-            );
+            window.EditorUpload.showToast(t("toast.uploadFirst"));
           }
           return;
         }
@@ -130,8 +128,13 @@ window.EditorApp = (function () {
     if (!scrollEl || !leftArrow || !rightArrow) return;
 
     function updateArrows() {
-      const scrollLeft = scrollEl.scrollLeft;
       const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+      // Physical offset from the left edge (0..max), regardless of text direction.
+      // In RTL, browsers report scrollLeft from 0 (rightmost) down to -max.
+      const scrollLeft =
+        getComputedStyle(scrollEl).direction === "rtl"
+          ? scrollEl.scrollLeft + maxScroll
+          : scrollEl.scrollLeft;
 
       if (scrollLeft > 2) {
         leftArrow.classList.add("visible");

@@ -22,6 +22,14 @@ window.EditorExport = (function () {
     if (btnUploadSingle) {
       btnUploadSingle.addEventListener("click", executeSingleExport);
     }
+
+    window.addEventListener("editor:languagechange", updateStatusBarText);
+  }
+
+  // Swap the text label of a header button (keeps its SVG icon intact)
+  function setButtonLabel(btn, text) {
+    const label = btn && btn.querySelector("[data-i18n]");
+    if (label) label.textContent = text;
   }
 
   function buildExportSubToolbar(container) {
@@ -33,19 +41,19 @@ window.EditorExport = (function () {
     // Format Selector
     const fSpan = document.createElement("span");
     fSpan.className = "tool-label";
-    fSpan.textContent = "Format:";
+    fSpan.textContent = t("export.format");
     container.appendChild(fSpan);
 
     const formatSelect = document.createElement("select");
     formatSelect.className = "tool-select";
     [
-      { id: "webp", label: "WebP (Recommended)" },
-      { id: "jpeg", label: "JPEG" },
-      { id: "png", label: "PNG (Lossless)" },
+      { id: "webp", labelKey: "export.format.webp" },
+      { id: "jpeg", labelKey: "export.format.jpeg" },
+      { id: "png", labelKey: "export.format.png" },
     ].forEach((f) => {
       const opt = document.createElement("option");
       opt.value = f.id;
-      opt.textContent = f.label;
+      opt.textContent = t(f.labelKey);
       formatSelect.appendChild(opt);
     });
     formatSelect.value = settings.format;
@@ -63,7 +71,9 @@ window.EditorExport = (function () {
     // Quality Slider (for webp & jpeg)
     const qSpan = document.createElement("span");
     qSpan.className = "tool-label";
-    qSpan.textContent = `Quality (${Math.round(settings.quality * 100)}%):`;
+    qSpan.textContent = t("export.quality", {
+      pct: Math.round(settings.quality * 100),
+    });
     container.appendChild(qSpan);
 
     const qInput = document.createElement("input");
@@ -75,7 +85,7 @@ window.EditorExport = (function () {
     qInput.addEventListener("input", (e) => {
       const val = parseInt(e.target.value, 10);
       settings.quality = val / 100;
-      qSpan.textContent = `Quality (${val}%):`;
+      qSpan.textContent = t("export.quality", { pct: val });
       calculateLiveSize();
       if (isPreviewQualityOn) refreshPreview();
     });
@@ -88,24 +98,15 @@ window.EditorExport = (function () {
     // Max Dimension Selector with descriptive presets (Max Resize)
     const mSpan = document.createElement("span");
     mSpan.className = "tool-label";
-    mSpan.textContent = "Max Resize:";
+    mSpan.textContent = t("export.maxResize");
     container.appendChild(mSpan);
 
     const maxSelect = document.createElement("select");
     maxSelect.className = "tool-select";
-    [
-      { id: 0, label: "Original (No limit)" },
-      { id: 150, label: "150px - Square Thumb / Icon" },
-      { id: 300, label: "300px - Avatar / Profile (1:1)" },
-      { id: 600, label: "600px - Small / Card" },
-      { id: 1080, label: "1080px - Medium / Web" },
-      { id: 1200, label: "1200px - Social Media Landscape" },
-      { id: 1920, label: "1920px - Full HD (16:9)" },
-      { id: 2560, label: "2560px - 2K QHD" },
-    ].forEach((m) => {
+    [0, 150, 300, 600, 1080, 1200, 1920, 2560].forEach((size) => {
       const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = m.label;
+      opt.value = size;
+      opt.textContent = t(`export.max.${size}`);
       maxSelect.appendChild(opt);
     });
     maxSelect.value = settings.maxSize;
@@ -124,15 +125,15 @@ window.EditorExport = (function () {
     const previewBtn = document.createElement("button");
     previewBtn.className = `tool-btn ${isPreviewQualityOn ? "active" : ""}`;
     previewBtn.textContent = isPreviewQualityOn
-      ? "✓ Preview: ON"
-      : "👁 Preview Quality";
-    previewBtn.title = "Toggle live preview of compressed & resized output";
+      ? t("export.previewOn")
+      : t("export.previewOff");
+    previewBtn.title = t("export.preview.tooltip");
     previewBtn.addEventListener("click", () => {
       isPreviewQualityOn = !isPreviewQualityOn;
       previewBtn.className = `tool-btn ${isPreviewQualityOn ? "active" : ""}`;
       previewBtn.textContent = isPreviewQualityOn
-        ? "✓ Preview: ON"
-        : "👁 Preview Quality";
+        ? t("export.previewOn")
+        : t("export.previewOff");
       refreshPreview();
     });
     container.appendChild(previewBtn);
@@ -236,7 +237,7 @@ window.EditorExport = (function () {
         tw = Math.round((w * settings.maxSize) / h);
         th = settings.maxSize;
       }
-      sizeDesc = `${w}x${h} → ${tw}x${th} (Max resize)`;
+      sizeDesc = `${w}x${h} → ${tw}x${th} (${t("status.maxResize")})`;
     }
 
     statusElem.textContent = `${zoomPct}%, ${sizeDesc}, ${estimatedSizeText}`;
@@ -328,14 +329,14 @@ window.EditorExport = (function () {
     const item = window.EditorQueue ? window.EditorQueue.getActiveItem() : null;
     if (!item) {
       if (window.EditorUpload)
-        window.EditorUpload.showToast("No active image to upload.");
+        window.EditorUpload.showToast(t("toast.noActiveImage"));
       return;
     }
 
     const btn = document.getElementById("btnUploadSingle");
     if (btn) {
       btn.disabled = true;
-      btn.textContent = "Uploading...";
+      setButtonLabel(btn, t("export.uploading"));
     }
 
     window.EditorQueue.updateItemStatus(item.id, "UPLOADING", 10);
@@ -381,7 +382,7 @@ window.EditorExport = (function () {
       window.EditorQueue.updateItemStatus(item.id, "DONE", 100);
       if (window.EditorUpload) {
         window.EditorUpload.showToast(
-          `Image "${finalName}" uploaded successfully`,
+          t("toast.uploadedOne", { name: finalName }),
         );
       }
 
@@ -405,15 +406,12 @@ window.EditorExport = (function () {
       console.error("Error exporting single item:", item.name, err);
       window.EditorQueue.updateItemStatus(item.id, "ERROR", 0);
       if (window.EditorUpload) {
-        window.EditorUpload.showToast("Failed to upload image.");
+        window.EditorUpload.showToast(t("toast.uploadFailed"));
       }
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-          Upload Image
-        `;
+        setButtonLabel(btn, t("header.uploadImage"));
       }
     }
   }
@@ -425,14 +423,14 @@ window.EditorExport = (function () {
     const queue = window.EditorQueue ? window.EditorQueue.items : [];
     if (!queue.length) {
       if (window.EditorUpload)
-        window.EditorUpload.showToast("No images to upload.");
+        window.EditorUpload.showToast(t("toast.noImages"));
       return;
     }
 
     const btn = document.getElementById("btnUploadDone");
     if (btn) {
       btn.disabled = true;
-      btn.textContent = "Processing...";
+      setButtonLabel(btn, t("export.processing"));
     }
 
     let successCount = 0;
@@ -491,15 +489,12 @@ window.EditorExport = (function () {
 
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
-        Upload All & Done
-      `;
+      setButtonLabel(btn, t("header.uploadAll"));
     }
 
     if (window.EditorUpload) {
       window.EditorUpload.showToast(
-        `Successfully processed ${successCount} image(s)`,
+        t("toast.processed", { count: successCount }),
       );
     }
 

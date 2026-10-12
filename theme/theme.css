@@ -187,6 +187,18 @@ body {
     font-size: 14px;
 }
 
+/* === i18n === */
+/* Set in <head> by js/i18n/editor_i18n.js for non-English languages, removed once
+   static markup is translated - prevents a flash of untranslated text. */
+html.i18n-pending body {
+    visibility: hidden;
+}
+
+/* Prefer native CJK UI fonts for Japanese (avoids Chinese glyph variants) */
+html:lang(ja) body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", var(--font-sans);
+}
+
 /* === Strict Single-Column Layout Container === */
 .app-container {
     display: flex;
@@ -401,6 +413,9 @@ body {
 }
 
 .toolbar-arrow {
+    /* Arrows are physically positioned (left/right); keep LTR so the bidi-mirrored
+       glyphs (U+276E/U+276F) aren't flipped in RTL languages */
+    direction: ltr;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -495,7 +510,7 @@ body {
 .tool-label {
     font-size: 12px;
     color: var(--text-muted);
-    margin-right: 4px;
+    margin-inline-end: 4px;
     white-space: nowrap;
 }
 
@@ -716,7 +731,7 @@ body {
 .gallery-item-delete {
     position: absolute;
     top: 4px;
-    right: 4px;
+    inset-inline-end: 4px;
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -738,7 +753,7 @@ body {
 .gallery-status-badge {
     position: absolute;
     top: 4px;
-    left: 4px;
+    inset-inline-start: 4px;
     padding: 2px 5px;
     border-radius: 4px;
     font-size: 10px;
