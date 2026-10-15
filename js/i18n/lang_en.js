@@ -82,6 +82,7 @@ window.EditorI18n.register("en", {
   "camera.title": "Capture Photo",
   "camera.switch": "Switch Camera",
   "camera.snap": "Snap Photo",
+  "camera.rotate": "Rotate View",
   "camera.device": "Camera {n}",
 
   // Color picker

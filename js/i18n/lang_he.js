@@ -81,6 +81,7 @@ window.EditorI18n.register("he", {
   "camera.title": "צילום תמונה",
   "camera.switch": "החלפת מצלמה",
   "camera.snap": "צילום",
+  "camera.rotate": "סיבוב תצוגה",
   "camera.device": "מצלמה {n}",
 
   // Color picker

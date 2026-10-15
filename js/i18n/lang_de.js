@@ -81,6 +81,7 @@ window.EditorI18n.register("de", {
   "camera.title": "Foto aufnehmen",
   "camera.switch": "Kamera wechseln",
   "camera.snap": "Foto aufnehmen",
+  "camera.rotate": "Ansicht drehen",
   "camera.device": "Kamera {n}",
 
   // Color picker

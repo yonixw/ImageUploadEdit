@@ -26,6 +26,11 @@ window.EditorApp = (function () {
     );
     setupToolbarOverflow("toolbar1Scroll", "tb1ArrowLeft", "tb1ArrowRight");
     setupToolbarOverflow("toolbar2Scroll", "tb2ArrowLeft", "tb2ArrowRight");
+    setupToolbarOverflow(
+      "statusBarRowScroll",
+      "statusArrowLeft",
+      "statusArrowRight",
+    );
 
     // Default view state
     switchTab("upload");
