@@ -4,11 +4,11 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 
 > **AI Disclosure:** This project was developed and designed with the assistance of AI (**Google Gemini 3.7** and **Anthropic Claude**).
 
-
+See DEMO here: https://yonixw.github.io/ImageUploadEdit/example_using_editor.html
 
 ![Screenshot](./history/Sceen1.png)
 
-See DEMO here: https://yonixw.github.io/ImageUploadEdit/example_using_editor.html
+
 
 ## Features
 
