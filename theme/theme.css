@@ -671,6 +671,10 @@ html:lang(ja) body {
     transform: translateY(-2px);
 }
 
+.upload-credit {
+    align-self: center;
+}
+
 /* Gallery / Queue View */
 .gallery-grid {
     display: grid;
@@ -792,10 +796,31 @@ html:lang(ja) body {
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
     overflow: hidden;
     z-index: 25;
+}
+
+/* Scrollable row (with toolbar-arrow overflow indicators) so nothing
+   overlaps on narrow screens */
+.status-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    padding: 0 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+}
+
+.status-bar-row::-webkit-scrollbar {
+    display: none;
+}
+
+.status-bar-row > * {
+    flex-shrink: 0;
 }
 
 .status-bar-controls {
@@ -830,11 +855,9 @@ html:lang(ja) body {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex: 1;
+    flex: 1 0 auto;
     height: 100%;
     padding: 0 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
     font-size: 12px;
     font-family: monospace;
     color: var(--text-muted);
@@ -939,10 +962,11 @@ html:lang(ja) body {
     position: relative;
 }
 
+/* contain: show the whole frame so the preview matches the captured photo */
 .camera-preview-box video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .camera-controls-row {
@@ -951,6 +975,162 @@ html:lang(ja) body {
     justify-content: space-between;
     margin-top: 14px;
     gap: 10px;
+}
+
+/* Desktop: dialog takes 90% of the window, preview fills what's left */
+.camera-modal-card {
+    max-width: none;
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.camera-modal-card .modal-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.camera-modal-card .camera-preview-box {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+}
+
+.camera-rotator {
+    position: absolute;
+    inset: 0;
+}
+
+.camera-fs-close,
+.camera-fs-btn,
+.camera-top-marker {
+    display: none;
+}
+
+/* Small screens (90% dialog would leave under ~800x600 preview): full-screen camera
+   view with floating, translucent shutter (left) and rotate-view (right) buttons */
+@media (max-width: 880px), (max-height: 780px) {
+    .camera-modal.modal-overlay {
+        padding: 0;
+        background: #000;
+        backdrop-filter: none;
+    }
+
+    .camera-modal .camera-modal-card {
+        max-width: none;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 0;
+        background: #000;
+        animation: none;
+    }
+
+    .camera-modal .modal-header,
+    .camera-modal .camera-controls-row {
+        display: none;
+    }
+
+    .camera-modal .modal-body {
+        padding: 0;
+        height: 100%;
+    }
+
+    .camera-modal .camera-preview-box {
+        aspect-ratio: auto;
+        height: 100%;
+        border-radius: 0;
+        container-type: size;
+    }
+
+    /* Rotated by the user via --cam-rot; sideways turns swap width/height
+       so the rotated preview still fills the screen */
+    .camera-modal .camera-rotator {
+        inset: auto;
+        top: 50%;
+        left: 50%;
+        width: 100cqw;
+        height: 100cqh;
+        transform: translate(-50%, -50%) rotate(var(--cam-rot, 0deg));
+        transition: transform 0.2s ease;
+    }
+
+    .camera-modal .camera-rotator.sideways {
+        width: 100cqh;
+        height: 100cqw;
+    }
+
+    /* Chevron marking the top edge of the captured photo */
+    .camera-top-marker {
+        display: block;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        opacity: 0.85;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+        pointer-events: none;
+    }
+
+    .camera-fs-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        bottom: max(24px, env(safe-area-inset-bottom));
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+        backdrop-filter: blur(2px);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .camera-fs-btn:active {
+        transform: scale(0.92);
+    }
+
+    .camera-fs-snap {
+        left: 24px;
+        width: 72px;
+        height: 72px;
+        border: 4px solid rgba(255, 255, 255, 0.85);
+        background: rgba(229, 57, 53, 0.65);
+    }
+
+    .camera-fs-snap:active {
+        background: rgba(198, 40, 40, 0.85);
+    }
+
+    .camera-fs-rotate {
+        right: 24px;
+        bottom: max(32px, env(safe-area-inset-bottom));
+        width: 56px;
+        height: 56px;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        background: rgba(0, 0, 0, 0.35);
+    }
+
+    .camera-fs-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: max(12px, env(safe-area-inset-top));
+        inset-inline-end: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 26px;
+        line-height: 1;
+        cursor: pointer;
+    }
 }
 
 /* Color Chooser Popup Dropdown */

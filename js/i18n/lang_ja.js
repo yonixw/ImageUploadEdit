@@ -81,6 +81,7 @@ window.EditorI18n.register("ja", {
   "camera.title": "写真を撮影",
   "camera.switch": "カメラ切り替え",
   "camera.snap": "撮影",
+  "camera.rotate": "表示を回転",
   "camera.device": "カメラ {n}",
 
   // Color picker

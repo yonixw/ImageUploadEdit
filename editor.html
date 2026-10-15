@@ -269,6 +269,9 @@
                         </div>
                     </div>
 
+                    <a href="https://github.com/yonixw/ImageUploadEdit" target="_blank" rel="noopener noreferrer"
+                        class="status-bar-link upload-credit" dir="ltr">by yonixw v1.1</a>
+
                     <input type="file" id="fileInput" multiple accept="image/*,.svg,.webp,.png,.jpeg,.jpg,.bmp,.gif"
                         style="display:none;">
                     <input type="file" id="folderInput" webkitdirectory directory style="display:none;">
@@ -289,6 +292,8 @@
 
         <!-- === 5. Compact Status Bar (Bottom) === -->
         <footer class="app-status-bar" id="statusBarWrapper">
+            <button class="toolbar-arrow left" id="statusArrowLeft" aria-label="Scroll left" data-i18n-aria-label="nav.scrollLeft">&#10094;</button>
+            <div class="status-bar-row" id="statusBarRowScroll">
             <div class="status-bar-controls">
                 <button class="btn-status" id="btnCenterView" title="Center & Fit image to screen"
                     data-i18n-title="status.centerFit.tooltip">⛶ <span data-i18n="status.centerFit">Center /
@@ -299,7 +304,9 @@
             </div>
             <div class="status-bar-scroll" id="statusBarText" dir="ltr">100%, 0x0, 0KB</div>
             <a href="https://github.com/yonixw/ImageUploadEdit" target="_blank" rel="noopener noreferrer"
-                class="status-bar-link">by yonixw v302</a>
+                class="status-bar-link">by yonixw v1.1</a>
+            </div>
+            <button class="toolbar-arrow right" id="statusArrowRight" aria-label="Scroll right" data-i18n-aria-label="nav.scrollRight">&#10095;</button>
         </footer>
 
     </div>
@@ -321,15 +328,35 @@
     </div>
 
     <!-- Camera Capture Modal -->
-    <div class="modal-overlay" id="modalCamera">
-        <div class="modal-card" style="max-width: 600px;">
+    <div class="modal-overlay camera-modal" id="modalCamera">
+        <div class="modal-card camera-modal-card">
             <div class="modal-header">
                 <span data-i18n="camera.title">Capture Photo</span>
                 <button class="btn btn-icon" id="btnCameraClose" title="Close" data-i18n-title="common.close">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="camera-preview-box">
-                    <video id="cameraVideo" playsinline autoplay muted></video>
+                    <!-- Rotates the preview only; the chevron marks the top of the captured photo -->
+                    <div class="camera-rotator" id="cameraRotator">
+                        <video id="cameraVideo" playsinline autoplay muted></video>
+                        <svg class="camera-top-marker" viewBox="0 0 24 12" width="36" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="3 10 12 2 21 10"/>
+                        </svg>
+                    </div>
+                    <!-- Shown only in full-screen (small screen) camera mode -->
+                    <button class="camera-fs-close" id="btnCameraCloseFs" title="Close" data-i18n-title="common.close">&times;</button>
+                    <button class="camera-fs-btn camera-fs-snap" id="btnCameraSnapFs" title="Snap Photo" data-i18n-title="camera.snap">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                    </button>
+                    <button class="camera-fs-btn camera-fs-rotate" id="btnCameraRotateFs" title="Rotate View" data-i18n-title="camera.rotate">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="camera-controls-row">
                     <select class="tool-select" id="cameraDeviceSelect" style="flex:1; max-width:200px;"></select>

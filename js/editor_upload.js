@@ -7,6 +7,7 @@ window.EditorUpload = (function () {
   let pendingFilesToProcess = [];
   let cameraStream = null;
   let currentFacingMode = "environment"; // default to back camera
+  let previewRotation = 0; // degrees, keeps growing so the CSS transition always turns clockwise
 
   function init() {
     bindFileInputs();
@@ -230,6 +231,10 @@ window.EditorUpload = (function () {
     const modal = document.getElementById("modalCamera");
     const btnClose = document.getElementById("btnCameraClose");
     const btnSnap = document.getElementById("btnCameraSnap");
+    const btnCloseFs = document.getElementById("btnCameraCloseFs");
+    const btnSnapFs = document.getElementById("btnCameraSnapFs");
+    const btnRotateFs = document.getElementById("btnCameraRotateFs");
+    const rotator = document.getElementById("cameraRotator");
     const btnFacing = document.getElementById("btnCameraFacing");
     const deviceSelect = document.getElementById("cameraDeviceSelect");
     const video = document.getElementById("cameraVideo");
@@ -242,10 +247,19 @@ window.EditorUpload = (function () {
       });
     }
 
-    if (btnClose) {
-      btnClose.addEventListener("click", () => {
-        stopCameraStream();
-        if (modal) modal.classList.remove("active");
+    const closeCamera = () => {
+      stopCameraStream();
+      if (modal) modal.classList.remove("active");
+    };
+    if (btnClose) btnClose.addEventListener("click", closeCamera);
+    if (btnCloseFs) btnCloseFs.addEventListener("click", closeCamera);
+
+    // Full-screen view rotation (preview only; the photo keeps the camera's orientation)
+    if (btnRotateFs && rotator) {
+      btnRotateFs.addEventListener("click", () => {
+        previewRotation += 90;
+        rotator.style.setProperty("--cam-rot", `${previewRotation}deg`);
+        rotator.classList.toggle("sideways", (previewRotation / 90) % 2 === 1);
       });
     }
 
@@ -263,8 +277,8 @@ window.EditorUpload = (function () {
       });
     }
 
-    if (btnSnap && video) {
-      btnSnap.addEventListener("click", () => {
+    if (video) {
+      const snapPhoto = () => {
         if (!video.videoWidth || !video.videoHeight) return;
 
         const offCanvas = document.createElement("canvas");
@@ -281,9 +295,10 @@ window.EditorUpload = (function () {
           showToast(t("toast.photoCaptured"));
         }
 
-        stopCameraStream();
-        if (modal) modal.classList.remove("active");
-      });
+        closeCamera();
+      };
+      if (btnSnap) btnSnap.addEventListener("click", snapPhoto);
+      if (btnSnapFs) btnSnapFs.addEventListener("click", snapPhoto);
     }
   }
 
@@ -324,14 +339,17 @@ window.EditorUpload = (function () {
       return;
     }
 
+    // Ask for frames matching the screen orientation so a phone held in
+    // portrait gets a portrait stream that fills the full-screen preview
+    const portrait = window.innerHeight > window.innerWidth;
+    const resolution = {
+      width: { ideal: portrait ? 1080 : 1920 },
+      height: { ideal: portrait ? 1920 : 1080 },
+    };
     const constraints = {
       video: deviceId
-        ? { deviceId: { exact: deviceId } }
-        : {
-            facingMode: currentFacingMode,
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-          },
+        ? { deviceId: { exact: deviceId }, ...resolution }
+        : { facingMode: currentFacingMode, ...resolution },
     };
 
     try {
