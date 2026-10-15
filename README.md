@@ -8,7 +8,7 @@ A standalone, zero-external-dependency HTML5 client-side image uploader and mult
 
 ![Screenshot](./history/Sceen1.png)
 
-
+See DEMO here: https://yonixw.github.io/ImageUploadEdit/example_using_editor.html
 
 ## Features
 
