@@ -355,6 +355,13 @@ html:lang(ja) body {
     border-color: var(--accent-hover);
 }
 
+.btn:disabled,
+.tool-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .btn-success {
     background: var(--success);
     color: #ffffff;

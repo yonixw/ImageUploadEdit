@@ -36,6 +36,8 @@ window.EditorI18n.register("en", {
   "tools.filter.tooltip": "Presets & Adjustments",
   "tools.censor": "Censor",
   "tools.censor.tooltip": "Blur & Pixelate",
+  "tools.bgblur": "Background",
+  "tools.bgblur.tooltip": "AI Background Blur",
   "tools.brush": "Brush",
   "tools.brush.tooltip": "Brush & Pencil",
   "tools.text": "Text & Emoji",
@@ -165,6 +167,21 @@ window.EditorI18n.register("en", {
   "censor.freehandIn": "Freehand-In",
   "censor.freehandOut": "Freehand-Out",
   "censor.radius": "Intensity / Radius:",
+
+  // Background blur (AI)
+  "bgblur.hint": "Tap the item(s) to keep sharp",
+  "bgblur.loading": "Loading AI model (~6 MB)…",
+  "bgblur.loadFailed": "Could not load the AI model. Check your connection.",
+  "bgblur.working": "Finding the item…",
+  "bgblur.stillLoading": "The AI model is still loading, please wait…",
+  "bgblur.addFirst": "Tap an item to keep first.",
+  "bgblur.segmentFailed": "Could not detect an item there.",
+  "bgblur.keep": "Keep",
+  "bgblur.remove": "Remove",
+  "bgblur.undoTap": "Undo last tap",
+  "bgblur.strength": "Blur:",
+  "bgblur.clear": "Clear",
+  "bgblur.apply": "Apply",
 
   // Brush
   "brush.color.tooltip": "Change Color & Opacity",

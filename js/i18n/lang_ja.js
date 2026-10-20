@@ -35,6 +35,8 @@ window.EditorI18n.register("ja", {
   "tools.filter.tooltip": "プリセット＆補正",
   "tools.censor": "モザイク",
   "tools.censor.tooltip": "ぼかし＆モザイク",
+  "tools.bgblur": "背景",
+  "tools.bgblur.tooltip": "AI 背景ぼかし",
   "tools.brush": "ブラシ",
   "tools.brush.tooltip": "ブラシ＆鉛筆",
   "tools.text": "テキスト・絵文字",
@@ -161,6 +163,21 @@ window.EditorI18n.register("ja", {
   "censor.freehandIn": "フリーハンド (内側)",
   "censor.freehandOut": "フリーハンド (外側)",
   "censor.radius": "強さ / 半径:",
+
+  // Background blur (AI)
+  "bgblur.hint": "くっきり残したい物をタップ",
+  "bgblur.loading": "AI モデルを読み込み中（約 6 MB）…",
+  "bgblur.loadFailed": "AI モデルを読み込めませんでした。接続を確認してください。",
+  "bgblur.working": "対象を検出中…",
+  "bgblur.stillLoading": "AI モデルを読み込み中です。お待ちください…",
+  "bgblur.addFirst": "まず残したい物をタップしてください。",
+  "bgblur.segmentFailed": "そこに対象を検出できませんでした。",
+  "bgblur.keep": "残す",
+  "bgblur.remove": "除外",
+  "bgblur.undoTap": "最後のタップを取り消す",
+  "bgblur.strength": "ぼかし:",
+  "bgblur.clear": "クリア",
+  "bgblur.apply": "適用",
 
   // Brush
   "brush.color.tooltip": "色と不透明度を変更",

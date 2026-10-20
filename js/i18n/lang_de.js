@@ -35,6 +35,8 @@ window.EditorI18n.register("de", {
   "tools.filter.tooltip": "Vorlagen & Anpassungen",
   "tools.censor": "Zensieren",
   "tools.censor.tooltip": "Weichzeichnen & Verpixeln",
+  "tools.bgblur": "Hintergrund",
+  "tools.bgblur.tooltip": "KI-Hintergrundunschärfe",
   "tools.brush": "Pinsel",
   "tools.brush.tooltip": "Pinsel & Stift",
   "tools.text": "Text & Emoji",
@@ -164,6 +166,21 @@ window.EditorI18n.register("de", {
   "censor.freehandIn": "Freihand (innen)",
   "censor.freehandOut": "Freihand (außen)",
   "censor.radius": "Stärke / Radius:",
+
+  // Background blur (AI)
+  "bgblur.hint": "Tippe auf die Objekte, die scharf bleiben sollen",
+  "bgblur.loading": "KI-Modell wird geladen (~6 MB)…",
+  "bgblur.loadFailed": "KI-Modell konnte nicht geladen werden. Verbindung prüfen.",
+  "bgblur.working": "Objekt wird erkannt…",
+  "bgblur.stillLoading": "Das KI-Modell lädt noch, bitte warten…",
+  "bgblur.addFirst": "Tippe zuerst auf ein Objekt zum Behalten.",
+  "bgblur.segmentFailed": "Dort wurde kein Objekt erkannt.",
+  "bgblur.keep": "Behalten",
+  "bgblur.remove": "Entfernen",
+  "bgblur.undoTap": "Letztes Tippen rückgängig",
+  "bgblur.strength": "Unschärfe:",
+  "bgblur.clear": "Löschen",
+  "bgblur.apply": "Anwenden",
 
   // Brush
   "brush.color.tooltip": "Farbe & Deckkraft ändern",
