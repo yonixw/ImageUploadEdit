@@ -1757,7 +1757,7 @@ window.EditorTools = (function () {
   }
 
   function renderBrushOverlay(ctx, { imageToViewport, zoom }) {
-    if (!brushState.points.length && !brushState.startPoint) return;
+    if (!brushState.points.length) return;
     ctx.save();
     ctx.strokeStyle = currentColor;
     ctx.fillStyle = currentColor;
@@ -1765,12 +1765,13 @@ window.EditorTools = (function () {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    if (brushState.type === "freehand" && brushState.points.length > 1) {
-      ctx.beginPath();
-      const p0 = imageToViewport(
-        brushState.points[0].x,
-        brushState.points[0].y,
-      );
+    const p0 = imageToViewport(brushState.points[0].x, brushState.points[0].y);
+    ctx.beginPath();
+    if (brushState.points.length === 1) {
+      // Mirror commitBrushStroke: a single click paints a dot
+      ctx.arc(p0.x, p0.y, Math.max(0.5, (brushState.size * zoom) / 2), 0, Math.PI * 2);
+      ctx.fill();
+    } else {
       ctx.moveTo(p0.x, p0.y);
       for (let i = 1; i < brushState.points.length; i++) {
         const pt = imageToViewport(
@@ -1780,37 +1781,6 @@ window.EditorTools = (function () {
         ctx.lineTo(pt.x, pt.y);
       }
       ctx.stroke();
-    } else if (
-      brushState.type === "line" &&
-      brushState.startPoint &&
-      brushState.currentPoint
-    ) {
-      const p1 = imageToViewport(
-        brushState.startPoint.x,
-        brushState.startPoint.y,
-      );
-      const p2 = imageToViewport(
-        brushState.currentPoint.x,
-        brushState.currentPoint.y,
-      );
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-    } else if (
-      brushState.type === "arrow" &&
-      brushState.startPoint &&
-      brushState.currentPoint
-    ) {
-      const p1 = imageToViewport(
-        brushState.startPoint.x,
-        brushState.startPoint.y,
-      );
-      const p2 = imageToViewport(
-        brushState.currentPoint.x,
-        brushState.currentPoint.y,
-      );
-      drawArrow(ctx, p1.x, p1.y, p2.x, p2.y, brushState.size * zoom);
     }
     ctx.restore();
   }
