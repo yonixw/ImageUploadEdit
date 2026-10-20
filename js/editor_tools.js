@@ -5,7 +5,7 @@
  */
 
 window.EditorTools = (function () {
-  let activeTool = null; // 'crop' | 'transform' | 'filter' | 'censor' | 'brush' | 'text' | 'shapes' | 'export'
+  let activeTool = null; // 'crop' | 'transform' | 'filter' | 'censor' | 'bgblur' | 'brush' | 'text' | 'shapes' | 'export'
   let currentColor = "rgba(59, 130, 246, 1)";
   let currentAlpha = 1.0;
   let currentHex = "#3b82f6";
@@ -485,6 +485,9 @@ window.EditorTools = (function () {
         break;
       case "censor":
         buildCensorSubToolbar(tb2Scroll);
+        break;
+      case "bgblur":
+        if (window.EditorBgBlur) window.EditorBgBlur.buildSubToolbar(tb2Scroll);
         break;
       case "brush":
         buildBrushSubToolbar(tb2Scroll);
@@ -1644,6 +1647,8 @@ window.EditorTools = (function () {
       censorState.boxRect
     ) {
       renderCensorBoxOverlay(ctx, viewState);
+    } else if (activeTool === "bgblur" && window.EditorBgBlur) {
+      window.EditorBgBlur.renderOverlay(ctx, viewState);
     } else if (activeTool === "brush" && brushState.isDrawing) {
       renderBrushOverlay(ctx, viewState);
     } else if (activeTool === "text") {
@@ -1977,6 +1982,8 @@ window.EditorTools = (function () {
       return handleCropMouseDown(imgCoords, e);
     } else if (activeTool === "censor") {
       return handleCensorMouseDown(imgCoords, e);
+    } else if (activeTool === "bgblur" && window.EditorBgBlur) {
+      return window.EditorBgBlur.onPointerDown(imgCoords);
     } else if (activeTool === "brush") {
       return handleBrushMouseDown(imgCoords, e);
     } else if (activeTool === "text") {
@@ -2515,6 +2522,7 @@ window.EditorTools = (function () {
     },
     init,
     selectTool,
+    refreshSubToolbar: populateSubToolbar,
     undo,
     redo,
     pushHistorySnapshot,

@@ -35,6 +35,8 @@ window.EditorI18n.register("he", {
   "tools.filter.tooltip": "סגנונות והתאמות",
   "tools.censor": "הסתרה",
   "tools.censor.tooltip": "טשטוש ופיקסול",
+  "tools.bgblur": "רקע",
+  "tools.bgblur.tooltip": "טשטוש רקע בבינה מלאכותית",
   "tools.brush": "מברשת",
   "tools.brush.tooltip": "מברשת ועיפרון",
   "tools.text": "טקסט ואימוג׳י",
@@ -167,6 +169,21 @@ window.EditorI18n.register("he", {
   "censor.freehandIn": "יד חופשית - פנים",
   "censor.freehandOut": "יד חופשית - חוץ",
   "censor.radius": "עוצמה / רדיוס:",
+
+  // Background blur (AI)
+  "bgblur.hint": "הקישו על הפריט/ים שיישארו חדים",
+  "bgblur.loading": "טוען מודל AI (‏~6MB)…",
+  "bgblur.loadFailed": "לא ניתן לטעון את מודל ה-AI. בדקו את החיבור.",
+  "bgblur.working": "מאתר את הפריט…",
+  "bgblur.stillLoading": "מודל ה-AI עדיין נטען, אנא המתינו…",
+  "bgblur.addFirst": "הקישו קודם על פריט לשמירה.",
+  "bgblur.segmentFailed": "לא זוהה פריט במקום הזה.",
+  "bgblur.keep": "שמור",
+  "bgblur.remove": "הסר",
+  "bgblur.undoTap": "בטל הקשה אחרונה",
+  "bgblur.strength": "טשטוש:",
+  "bgblur.clear": "נקה",
+  "bgblur.apply": "החל",
 
   // Brush
   "brush.color.tooltip": "שינוי צבע ואטימות",
