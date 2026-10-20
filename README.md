@@ -18,7 +18,7 @@ See DEMO here: https://yonixw.github.io/ImageUploadEdit/example_using_editor.htm
   - **Transform:** 90° CW/CCW, 180°, horizontal & vertical flips.
   - **Filters & Adjustments:** Brightness, Contrast, Saturation, Warmth, Grayscale, Sepia, Invert, B&W.
   - **Censor:** Pixelate and Blur with Box, Brush, Freehand-In, and Freehand-Out selection modes.
-  - **AI Background Blur:** Tap the subject(s) to keep sharp and everything else is blurred. Keep / Remove taps with per-tap undo, live preview, and adjustable blur strength. Powered by the MediaPipe Interactive Segmenter, which loads lazily from jsDelivr / Google Storage the first time the tool is opened. It runs fully in the browser, so the image never leaves the device.
+  - **Auto Background fix:** Download to the device 16mb ai model to detect background and blur it without any 3rd party sharing.
   - **Brush:** Freehand drawing with adjustable stroke size, color, and opacity.
   - **Shapes:** Rectangle, Rounded Rectangle, Circle/Ellipse, Straight Line, Arrow, and Star with solid/dashed stroke and fill styles.
   - **Text & Emoji:** Drag-and-drop text with rotation, custom font, bold, italic, and badge background plate.
