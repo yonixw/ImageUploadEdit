@@ -682,6 +682,14 @@ html:lang(ja) body {
     align-self: center;
 }
 
+/* Single image mode (?single=true): no mode tabs, gallery, folder picker or batch upload */
+.single-mode #tabsToolbarWrapper,
+.single-mode #btnUploadDone,
+.single-mode #btnPickFolder,
+.single-mode #viewGallery {
+    display: none !important;
+}
+
 /* Gallery / Queue View */
 .gallery-grid {
     display: grid;

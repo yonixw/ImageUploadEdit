@@ -314,6 +314,13 @@
                     <label>Quality (0.1 to 1.0)</label>
                     <input type="number" id="cfgQuality" min="0.1" max="1.0" step="0.05" value="0.85">
                 </div>
+                <div class="form-group">
+                    <label>Mode (?single=)</label>
+                    <select id="cfgSingle">
+                        <option value="false">Multi image (queue & gallery)</option>
+                        <option value="true">Single image (upload &rarr; edit &rarr; upload / close)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="btn-group">
@@ -395,8 +402,9 @@
             const format = encodeURIComponent(document.getElementById('cfgFormat').value);
             const maxSize = encodeURIComponent(document.getElementById('cfgMaxSize').value);
             const quality = encodeURIComponent(document.getElementById('cfgQuality').value);
+            const single = document.getElementById('cfgSingle').value;
 
-            const queryString = `token=${token}&title=${title}&theme=${theme}&lang=${lang}&format=${format}&maxSize=${maxSize}&quality=${quality}&autoClose=true`;
+            const queryString = `token=${token}&title=${title}&theme=${theme}&lang=${lang}&format=${format}&maxSize=${maxSize}&quality=${quality}&single=${single}&autoClose=true`;
             // Append both search query (?...) and hash fragment (#...) to guarantee compatibility even in file:// or sandboxed iframes
             return `editor.html?${queryString}#${queryString}`;
         }
@@ -410,6 +418,7 @@
             const formatVal = document.getElementById('cfgFormat').value;
             const maxSizeVal = parseInt(document.getElementById('cfgMaxSize').value, 10) || 0;
             const qualityVal = parseFloat(document.getElementById('cfgQuality').value) || 0.85;
+            const singleVal = document.getElementById('cfgSingle').value === 'true';
 
             try {
                 targetWindow.postMessage({
@@ -423,6 +432,7 @@
                         format: formatVal,
                         maxSize: maxSizeVal,
                         quality: qualityVal,
+                        single: singleVal,
                         autoClose: true
                     }
                 }, '*');
