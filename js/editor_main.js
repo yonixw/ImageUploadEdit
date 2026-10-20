@@ -32,8 +32,39 @@ window.EditorApp = (function () {
       "statusArrowRight",
     );
 
+    // Single image mode (?single=true) hides the queue/gallery workflow
+    applySingleMode();
+
     // Default view state
     switchTab("upload");
+  }
+
+  function isSingleMode() {
+    return Boolean(window.EditorHost && window.EditorHost.config.single);
+  }
+
+  /**
+   * Single image mode: upload one image -> edit -> upload or close.
+   * Hides the mode tabs row, folder picker and batch upload (see theme.css `.single-mode`),
+   * and swaps upload texts to their singular variants (`data-i18n-single`).
+   */
+  function applySingleMode() {
+    const single = isSingleMode();
+    document.body.classList.toggle("single-mode", single);
+
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) fileInput.multiple = !single;
+
+    document.querySelectorAll("[data-i18n-single]").forEach((el) => {
+      if (!el.hasAttribute("data-i18n-multi")) {
+        el.setAttribute("data-i18n-multi", el.getAttribute("data-i18n"));
+      }
+      el.setAttribute(
+        "data-i18n",
+        el.getAttribute(single ? "data-i18n-single" : "data-i18n-multi"),
+      );
+    });
+    if (window.EditorI18n) window.EditorI18n.apply(document);
   }
 
   function bindTabNavigation() {
@@ -185,8 +216,12 @@ window.EditorApp = (function () {
     get activeTab() {
       return activeTab;
     },
+    get isSingleMode() {
+      return isSingleMode();
+    },
     init,
     switchTab,
+    applySingleMode,
     setupToolbarOverflow,
   };
 })();

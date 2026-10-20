@@ -52,12 +52,24 @@ window.EditorUpload = (function () {
 
   // --- 2. Batch Ingestion Confirmation Safeguard (> 10 files) ---
   function handleFileList(files) {
-    const imageFiles = files.filter((file) => isImageFile(file));
+    let imageFiles = files.filter((file) => isImageFile(file));
     if (!imageFiles.length) {
       if (files.length > 0) {
         showToast(t("toast.noValidImages"));
       }
       return;
+    }
+
+    // Single image mode: accept exactly one image per editor session
+    if (isSingleMode()) {
+      if (window.EditorQueue && window.EditorQueue.items.length > 0) {
+        showToast(t("toast.singleModeFull"));
+        return;
+      }
+      if (imageFiles.length > 1) {
+        showToast(t("toast.singleModeFirstOnly"));
+        imageFiles = imageFiles.slice(0, 1);
+      }
     }
 
     if (imageFiles.length > 10) {
@@ -290,12 +302,21 @@ window.EditorUpload = (function () {
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         const filename = `photo-capture-${timestamp}.jpg`;
 
+        closeCamera();
+
+        if (isSingleMode() && window.EditorQueue.items.length > 0) {
+          showToast(t("toast.singleModeFull"));
+          return;
+        }
+
         if (window.EditorQueue) {
           window.EditorQueue.addItem(filename, offCanvas, "image/jpeg");
           showToast(t("toast.photoCaptured"));
         }
 
-        closeCamera();
+        if (isSingleMode() && window.EditorApp) {
+          window.EditorApp.switchTab("edit");
+        }
       };
       if (btnSnap) btnSnap.addEventListener("click", snapPhoto);
       if (btnSnapFs) btnSnapFs.addEventListener("click", snapPhoto);
@@ -476,6 +497,10 @@ window.EditorUpload = (function () {
         img.src = url;
       }
     });
+  }
+
+  function isSingleMode() {
+    return Boolean(window.EditorApp && window.EditorApp.isSingleMode);
   }
 
   function isImageFile(file) {

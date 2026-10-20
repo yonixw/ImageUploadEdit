@@ -56,6 +56,10 @@ window.EditorI18n.register("ja", {
   "upload.chooseFiles": "ファイルを選択",
   "upload.chooseFolder": "フォルダーを選択",
   "upload.useCamera": "カメラを使用",
+  "upload.dropHere.single": "ここに画像をドロップ",
+  "upload.heading.single": "編集する画像を選択",
+  "upload.dropzone.single": "画像ファイルをここにドラッグ＆ドロップ",
+  "upload.chooseFiles.single": "ファイルを選択",
 
   // Gallery view
   "gallery.title": "画像キュー",
@@ -104,6 +108,8 @@ window.EditorI18n.register("ja", {
   "toast.uploadFailed": "画像のアップロードに失敗しました。",
   "toast.noImages": "アップロードする画像がありません。",
   "toast.processed_other": "{count} 枚の画像を処理しました",
+  "toast.singleModeFirstOnly": "単一画像モード: 最初の画像のみ読み込みました。",
+  "toast.singleModeFull": "単一画像モード: 新しい画像を始めるには、アップロードするかエディターを閉じてください。",
 
   // Export / quality sub-toolbar
   "export.format": "形式:",

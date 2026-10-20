@@ -56,6 +56,10 @@ window.EditorI18n.register("de", {
   "upload.chooseFiles": "Dateien auswählen",
   "upload.chooseFolder": "Ordner auswählen",
   "upload.useCamera": "Kamera verwenden",
+  "upload.dropHere.single": "Bild hier ablegen",
+  "upload.heading.single": "Bild zum Bearbeiten auswählen",
+  "upload.dropzone.single": "Bilddatei hierher ziehen und ablegen",
+  "upload.chooseFiles.single": "Datei auswählen",
 
   // Gallery view
   "gallery.title": "Bilderwarteschlange",
@@ -107,6 +111,8 @@ window.EditorI18n.register("de", {
   "toast.noImages": "Keine Bilder zum Hochladen.",
   "toast.processed_one": "{count} Bild erfolgreich verarbeitet",
   "toast.processed_other": "{count} Bilder erfolgreich verarbeitet",
+  "toast.singleModeFirstOnly": "Einzelbildmodus: Nur das erste Bild wurde geladen.",
+  "toast.singleModeFull": "Einzelbildmodus: Lade hoch oder schließe den Editor, um ein neues Bild zu beginnen.",
 
   // Export / quality sub-toolbar
   "export.format": "Format:",

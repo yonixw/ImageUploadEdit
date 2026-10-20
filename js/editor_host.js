@@ -84,6 +84,10 @@ window.EditorHost = (function () {
     format: (getUrlParameter("format") || "webp").toLowerCase(),
     maxSize: parseInt(getUrlParameter("maxSize"), 10) || 0,
     quality: parseFloat(getUrlParameter("quality")) || 0.85,
+    // Single image mode: one upload -> edit -> upload/close, no queue or gallery
+    single:
+      getUrlParameter("single") === "true" ||
+      getUrlParameter("single") === "1",
   };
 
   const isPopup = Boolean(window.opener && window.opener !== window);
@@ -142,6 +146,7 @@ window.EditorHost = (function () {
     const readyPayload = {
       type: "EDITOR_READY",
       token: config.token,
+      single: config.single,
     };
 
     if (isPopup) {
@@ -181,6 +186,10 @@ window.EditorHost = (function () {
         if (data.config.title) setTitle(data.config.title);
         if (data.config.lang && window.EditorI18n)
           window.EditorI18n.setLanguage(data.config.lang);
+        if ("single" in data.config) {
+          config.single = Boolean(data.config.single);
+          if (window.EditorApp) window.EditorApp.applySingleMode();
+        }
       }
     } else if (data.action === "SET_THEME") {
       if (data.theme) setTheme(data.theme);

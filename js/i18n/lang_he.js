@@ -56,6 +56,10 @@ window.EditorI18n.register("he", {
   "upload.chooseFiles": "בחירת קבצים",
   "upload.chooseFolder": "בחירת תיקייה",
   "upload.useCamera": "שימוש במצלמה",
+  "upload.dropHere.single": "שחררו תמונה כאן",
+  "upload.heading.single": "בחרו תמונה לעריכה",
+  "upload.dropzone.single": "גררו ושחררו קובץ תמונה לכאן",
+  "upload.chooseFiles.single": "בחירת קובץ",
 
   // Gallery view
   "gallery.title": "תור תמונות",
@@ -110,6 +114,8 @@ window.EditorI18n.register("he", {
   "toast.processed_one": "תמונה אחת עובדה בהצלחה",
   "toast.processed_two": "שתי תמונות עובדו בהצלחה",
   "toast.processed_other": "{count} תמונות עובדו בהצלחה",
+  "toast.singleModeFirstOnly": "מצב תמונה בודדת: נטענה רק התמונה הראשונה.",
+  "toast.singleModeFull": "מצב תמונה בודדת: העלו או סגרו את העורך כדי להתחיל תמונה חדשה.",
 
   // Export / quality sub-toolbar
   "export.format": "פורמט:",

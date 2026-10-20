@@ -386,6 +386,13 @@ window.EditorExport = (function () {
         );
       }
 
+      // Single image mode: keep the image open, tell the host we're done
+      // (it may close us); the user can re-upload or close the editor
+      if (window.EditorApp && window.EditorApp.isSingleMode) {
+        if (window.EditorHost) window.EditorHost.sendDone();
+        return;
+      }
+
       // Remove the exported image from the queue and switch to gallery tab
       const uploadedItemId = item.id;
       if (

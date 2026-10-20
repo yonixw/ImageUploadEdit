@@ -57,6 +57,10 @@ window.EditorI18n.register("en", {
   "upload.chooseFiles": "Choose Files",
   "upload.chooseFolder": "Choose Folder",
   "upload.useCamera": "Use Camera",
+  "upload.dropHere.single": "Drop an Image Here",
+  "upload.heading.single": "Choose an Image to Edit",
+  "upload.dropzone.single": "Drag & Drop an Image File Here",
+  "upload.chooseFiles.single": "Choose File",
 
   // Gallery view
   "gallery.title": "Image Queue",
@@ -108,6 +112,8 @@ window.EditorI18n.register("en", {
   "toast.noImages": "No images to upload.",
   "toast.processed_one": "Successfully processed {count} image",
   "toast.processed_other": "Successfully processed {count} images",
+  "toast.singleModeFirstOnly": "Single image mode: only the first image was loaded.",
+  "toast.singleModeFull": "Single image mode: upload or close this editor to start a new image.",
 
   // Export / quality sub-toolbar
   "export.format": "Format:",
