@@ -1,6 +1,6 @@
 # ImageUploadEdit
 
-A standalone, zero-external-dependency HTML5 client-side image uploader and multi-tool image editor. Works out of the box in an iframe modal, a popup window, a new browser tab, or as a standalone app.
+A standalone, client-side HTML5 image uploader and multi-tool image editor. No build step and no runtime dependencies (the optional AI Background tool loads its model on first use). Works out of the box in an iframe modal, a popup window, a new browser tab, or as a standalone app.
 
 > **AI Disclosure:** This project was developed and designed with the assistance of AI (**Google Gemini 3.7** and **Anthropic Claude**).
 
@@ -18,10 +18,12 @@ See DEMO here: https://yonixw.github.io/ImageUploadEdit/example_using_editor.htm
   - **Transform:** 90° CW/CCW, 180°, horizontal & vertical flips.
   - **Filters & Adjustments:** Brightness, Contrast, Saturation, Warmth, Grayscale, Sepia, Invert, B&W.
   - **Censor:** Pixelate and Blur with Box, Brush, Freehand-In, and Freehand-Out selection modes.
+  - **AI Background Blur:** Tap the subject(s) to keep sharp and everything else is blurred. Keep / Remove taps with per-tap undo, live preview, and adjustable blur strength. Powered by the MediaPipe Interactive Segmenter, which loads lazily from jsDelivr / Google Storage the first time the tool is opened. It runs fully in the browser, so the image never leaves the device.
   - **Brush:** Freehand drawing with adjustable stroke size, color, and opacity.
   - **Shapes:** Rectangle, Rounded Rectangle, Circle/Ellipse, Straight Line, Arrow, and Star with solid/dashed stroke and fill styles.
   - **Text & Emoji:** Drag-and-drop text with rotation, custom font, bold, italic, and badge background plate.
   - **Export Optimization:** WebP, JPEG, PNG formats with live size estimation and max resizing dimension presets.
+- **Single Image Mode:** `?single=true` turns the editor into a one-shot flow: pick one image, edit it, then upload or close. The queue, gallery, and "Upload All" are hidden, and the host opens a new editor for the next image.
 - **Multi-Theme Support:**
   - **Dark Themes:** `dark` (default), `midnight` (deep navy), `emerald` (forest slate), `dark-orange`, `glass` (glassmorphism).
   - **Light Themes:** `light` (clean modern), `warm-light` (editorial minimal).
@@ -139,6 +141,7 @@ window.addEventListener('message', (event) => {
 | `maxSize` | `number` | `0` | Max edge resize in px (`0` for original resolution) |
 | `quality` | `number` | `0.85` | Export compression quality (`0.1` to `1.0`) |
 | `autoClose` | `boolean` | `false` | Automatically close popup or trigger close event on completion |
+| `single` | `boolean` | `false` | Single image mode: the user uploads one image and goes straight to editing. The mode tabs, gallery, folder picker and "Upload All" are hidden; the only actions are the editing tools, **Upload Image** and close. After uploading, `EDITOR_DONE` is sent (and a popup closes if `autoClose=true`). To edit another image, the host opens a new editor. Can also be set with `config.single` in `INIT` |
 
 ---
 
